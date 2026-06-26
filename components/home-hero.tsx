@@ -78,7 +78,7 @@ export function HomeHero() {
             style={{ transform: `translateY(${offset * -0.06}px)` }}
           >
             <Image
-              src="/images/hero.png"
+              src="/images/hero.svg"
               alt="Model wearing an elegant handwoven Ethiopian habesha dress with colorful tibeb border"
               fill
               priority

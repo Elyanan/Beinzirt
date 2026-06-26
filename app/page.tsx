@@ -38,7 +38,7 @@ export default function HomePage() {
           <Reveal className="relative">
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
               <Image
-                src="/images/gallery-textile.png"
+                src="/images/gallery-textile.svg"
                 alt="Close-up of intricate handwoven Ethiopian tibeb textile"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -103,7 +103,7 @@ export default function HomePage() {
           <Reveal delay={120} className="relative">
             <div className="relative aspect-[4/5] max-w-sm overflow-hidden rounded-2xl lg:ml-auto">
               <Image
-                src="/images/about-founder.png"
+                src="/images/about-founder.svg"
                 alt="Selam, founder of Beinzirt, in her textile workshop"
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
@@ -231,7 +231,7 @@ export default function HomePage() {
         <Reveal className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl">
           <div className="relative aspect-video">
             <Image
-              src="/images/video-poster.png"
+              src="/images/video-poster.svg"
               alt="Ethiopian weaving workshop with artisans at traditional looms"
               fill
               sizes="100vw"

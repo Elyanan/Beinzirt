@@ -3,7 +3,21 @@ import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Reveal } from '@/components/reveal'
 
-export function CtaSection() {
+type CtaSectionProps = {
+  title?: string
+  subtitle?: string
+  description?: string
+  buttonLabel?: string
+  buttonHref?: string
+}
+
+export function CtaSection({
+  title = "Can't find the perfect piece?",
+  subtitle = 'Let us create it for you.',
+  description = "Send us a sample design or idea and we'll bring your vision to life. From weddings to everyday wear, we've got you covered.",
+  buttonLabel = 'Start a Custom Order',
+  buttonHref = '/custom-order',
+}: CtaSectionProps) {
   return (
     <section className="px-5 py-20 lg:px-8">
       <Reveal className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-primary px-6 py-16 text-center text-primary-foreground md:py-20">
@@ -12,20 +26,23 @@ export function CtaSection() {
         <div className="pattern-strip absolute inset-x-0 bottom-0 h-1.5" />
         <div className="relative mx-auto max-w-2xl">
           <h2 className="text-balance font-serif text-3xl leading-tight md:text-4xl">
-            Can&apos;t find the perfect piece?
+            {title}
           </h2>
-          <p className="mt-3 font-serif text-xl text-accent">Let us create it for you.</p>
-          <p className="mx-auto mt-5 max-w-xl text-pretty leading-relaxed text-primary-foreground/80">
-            Send us a sample design or idea and we&apos;ll bring your vision to life.
-            From weddings to everyday wear, we&apos;ve got you covered.
-          </p>
+          {subtitle && (
+            <p className="mt-3 font-serif text-xl text-accent">{subtitle}</p>
+          )}
+          {description && (
+            <p className="mx-auto mt-5 max-w-xl text-pretty leading-relaxed text-primary-foreground/80">
+              {description}
+            </p>
+          )}
           <Button
             asChild
             size="lg"
             className="mt-8 rounded-full bg-accent px-7 text-accent-foreground hover:bg-accent/90"
           >
-            <Link href="/custom-order">
-              Start a Custom Order
+            <Link href={buttonHref}>
+              {buttonLabel}
               <ArrowRight className="size-4" />
             </Link>
           </Button>

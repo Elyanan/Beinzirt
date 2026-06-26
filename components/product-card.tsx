@@ -20,7 +20,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <>
-      <article className="group flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_50px_-30px_rgba(60,40,20,0.45)]">
+      <article className="group flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-luxury transition-all duration-500 hover:-translate-y-1 hover:shadow-luxury-hover">
         <div className="relative aspect-[4/5] overflow-hidden">
           <Image
             src={product.image || '/placeholder.svg'}

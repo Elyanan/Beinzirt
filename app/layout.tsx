@@ -22,10 +22,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'በእንዝርት — Beinzirt Design | Handcrafted Ethiopian Textiles',
+  title: 'Beinzirt Design | Ethiopian Traditional Clothing in Addis Ababa',
   description:
-    'Beinzirt Design crafts handmade Ethiopian traditional clothing and textiles in Addis Ababa. Discover dresses, gabi, scarves, and home textiles woven with heritage and pride.',
-  generator: 'v0.app',
+    'Discover handmade Ethiopian traditional clothing, Gabi, dresses, scarves, home textiles, and custom designs crafted by Beinzirt Design in Addis Ababa.',
   keywords: [
     'Ethiopian clothing',
     'habesha kemis',
@@ -34,12 +33,14 @@ export const metadata: Metadata = {
     'handmade textiles',
     'Addis Ababa',
     'Beinzirt',
+    'traditional dress',
+    'custom order',
   ],
 }
 
 export const viewport: Viewport = {
   colorScheme: 'light',
-  themeColor: '#f4efe3',
+  themeColor: '#F5E1A4',
 }
 
 export default function RootLayout({

@@ -12,7 +12,8 @@
 
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);
-  --color-forest: var(--forest);
+  --color-champagne: var(--champagne);
+  --color-charcoal: var(--charcoal);
   --color-brown: var(--brown);
   --color-eth-red: var(--eth-red);
   --color-eth-yellow: var(--eth-yellow);
@@ -60,51 +61,64 @@
 
 :root {
   color-scheme: light;
-  /* Warm cream / soft ivory base */
-  --background: oklch(0.965 0.013 88);
-  --foreground: oklch(0.255 0.018 52);
-  --card: oklch(0.985 0.008 90);
-  --card-foreground: oklch(0.255 0.018 52);
-  --popover: oklch(0.985 0.008 90);
-  --popover-foreground: oklch(0.255 0.018 52);
-  /* Deep forest green */
-  --primary: oklch(0.36 0.055 152);
-  --primary-foreground: oklch(0.97 0.013 88);
-  --secondary: oklch(0.93 0.016 84);
-  --secondary-foreground: oklch(0.3 0.02 52);
-  --muted: oklch(0.925 0.014 85);
-  --muted-foreground: oklch(0.46 0.022 58);
-  /* Muted gold accent */
-  --accent: oklch(0.74 0.095 80);
-  --accent-foreground: oklch(0.27 0.03 60);
+
+  /* Light cream / ivory base — inspired by #F5E1A4 */
+  --background: oklch(0.965 0.018 92);
+  --foreground: oklch(0.22 0.012 55);
+
+  --card: oklch(0.985 0.01 94);
+  --card-foreground: oklch(0.22 0.012 55);
+  --popover: oklch(0.985 0.01 94);
+  --popover-foreground: oklch(0.22 0.012 55);
+
+  /* Deep charcoal — inspired by #1A1A1A */
+  --primary: oklch(0.24 0.012 55);
+  --primary-foreground: oklch(0.97 0.014 92);
+
+  /* Soft champagne secondary */
+  --secondary: oklch(0.935 0.022 90);
+  --secondary-foreground: oklch(0.28 0.015 55);
+
+  --muted: oklch(0.925 0.016 90);
+  --muted-foreground: oklch(0.48 0.025 62);
+
+  /* Muted antique gold accent — inspired by #B8860B */
+  --accent: oklch(0.72 0.088 78);
+  --accent-foreground: oklch(0.22 0.012 55);
+
   --destructive: oklch(0.51 0.18 28);
-  --border: oklch(0.885 0.016 82);
-  --input: oklch(0.885 0.016 82);
-  --ring: oklch(0.74 0.095 80);
+  --border: oklch(0.88 0.018 88);
+  --input: oklch(0.88 0.018 88);
+  --ring: oklch(0.72 0.088 78);
 
   /* Brand tokens */
-  --gold: oklch(0.74 0.095 80);
-  --gold-foreground: oklch(0.27 0.03 60);
-  --forest: oklch(0.36 0.055 152);
-  --brown: oklch(0.42 0.045 55);
-  --eth-red: oklch(0.52 0.19 28);
-  --eth-yellow: oklch(0.8 0.13 88);
-  --eth-green: oklch(0.5 0.11 150);
+  --gold: oklch(0.76 0.095 82);
+  --gold-foreground: oklch(0.22 0.012 55);
+  --champagne: oklch(0.92 0.028 90);
+  --charcoal: oklch(0.24 0.012 55);
+  --brown: oklch(0.44 0.038 58);
 
-  --chart-1: oklch(0.36 0.055 152);
-  --chart-2: oklch(0.74 0.095 80);
-  --chart-3: oklch(0.52 0.19 28);
-  --chart-4: oklch(0.42 0.045 55);
-  --chart-5: oklch(0.6 0.08 120);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.985 0.008 90);
-  --sidebar-foreground: oklch(0.255 0.018 52);
-  --sidebar-primary: oklch(0.36 0.055 152);
-  --sidebar-primary-foreground: oklch(0.97 0.013 88);
-  --sidebar-accent: oklch(0.93 0.016 84);
-  --sidebar-accent-foreground: oklch(0.3 0.02 52);
-  --sidebar-border: oklch(0.885 0.016 82);
-  --sidebar-ring: oklch(0.74 0.095 80);
+  /* Subtle Ethiopian accent colors (muted for luxury feel) */
+  --eth-red: oklch(0.52 0.14 28);
+  --eth-yellow: oklch(0.82 0.1 88);
+  --eth-green: oklch(0.52 0.08 150);
+
+  --chart-1: oklch(0.24 0.012 55);
+  --chart-2: oklch(0.72 0.088 78);
+  --chart-3: oklch(0.52 0.14 28);
+  --chart-4: oklch(0.44 0.038 58);
+  --chart-5: oklch(0.76 0.095 82);
+
+  --radius: 0.625rem;
+
+  --sidebar: oklch(0.985 0.01 94);
+  --sidebar-foreground: oklch(0.22 0.012 55);
+  --sidebar-primary: oklch(0.24 0.012 55);
+  --sidebar-primary-foreground: oklch(0.97 0.014 92);
+  --sidebar-accent: oklch(0.935 0.022 90);
+  --sidebar-accent-foreground: oklch(0.28 0.015 55);
+  --sidebar-border: oklch(0.88 0.018 88);
+  --sidebar-ring: oklch(0.72 0.088 78);
 }
 
 @layer base {
@@ -124,26 +138,43 @@
 }
 
 @layer utilities {
-  /* Ethiopian tibeb-inspired pattern strip */
+  /* Refined gold tibeb-inspired pattern strip */
   .pattern-strip {
     background-image: repeating-linear-gradient(
       90deg,
-      var(--eth-green) 0 6px,
-      var(--eth-yellow) 6px 12px,
-      var(--eth-red) 12px 18px,
-      var(--gold) 18px 24px
+      oklch(0.72 0.088 78) 0 8px,
+      oklch(0.82 0.07 88) 8px 16px,
+      oklch(0.52 0.14 28 / 0.6) 16px 22px,
+      oklch(0.76 0.095 82) 22px 30px
     );
   }
 
   .pattern-soft {
     background-color: var(--background);
     background-image:
-      radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--gold) 35%, transparent) 1px, transparent 0);
-    background-size: 22px 22px;
+      radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--gold) 22%, transparent) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+
+  .pattern-gold-overlay {
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--gold) 18%, transparent) 0%,
+      transparent 50%,
+      color-mix(in oklch, var(--accent) 12%, transparent) 100%
+    );
   }
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  .shadow-luxury {
+    box-shadow: 0 24px 50px -30px color-mix(in oklch, var(--charcoal) 35%, transparent);
+  }
+
+  .shadow-luxury-hover {
+    box-shadow: 0 32px 64px -32px color-mix(in oklch, var(--charcoal) 40%, transparent);
   }
 
   /* Scroll reveal */
@@ -185,6 +216,11 @@
   to { transform: translateX(-50%); }
 }
 
+@keyframes shimmer-gold {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
 .animate-fade-up {
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -193,4 +229,7 @@
 }
 .animate-marquee {
   animation: marquee 30s linear infinite;
+}
+.animate-shimmer-gold {
+  animation: shimmer-gold 4s ease-in-out infinite;
 }

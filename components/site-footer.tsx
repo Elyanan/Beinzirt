@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Phone, Mail, MapPin, Clock } from 'lucide-react'
-import { contactInfo } from '@/lib/data'
+import { contactInfo, footerCompanyLinks } from '@/lib/data'
 
 export function SiteFooter() {
   return (
@@ -39,10 +39,13 @@ export function SiteFooter() {
             Company
           </h3>
           <ul className="mt-4 space-y-2 text-sm text-primary-foreground/75">
-            <li><Link href="/about" className="transition-colors hover:text-accent">About</Link></li>
-            <li><Link href="/gallery" className="transition-colors hover:text-accent">Gallery</Link></li>
-            <li><Link href="/blog" className="transition-colors hover:text-accent">Blog</Link></li>
-            <li><Link href="/contact" className="transition-colors hover:text-accent">Contact</Link></li>
+            {footerCompanyLinks.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="transition-colors hover:text-accent">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 
