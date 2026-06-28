@@ -3,17 +3,24 @@
 import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
 import { ProductCard } from '@/components/product-card'
-import { products, categories } from '@/lib/data'
+import type { Product } from '@/lib/data'
+import type { CmsCategory } from '@/lib/sanity'
 import { cn } from '@/lib/utils'
 
 const sortOptions = [
   { value: 'featured', label: 'Featured' },
-  { value: 'price-asc', label: 'Price: Low to High' },
-  { value: 'price-desc', label: 'Price: High to Low' },
-  { value: 'name', label: 'Name: A–Z' },
+  { value: 'newest', label: 'Newest' },
+  { value: 'az', label: 'A-Z' },
+  { value: 'za', label: 'Z-A' },
 ] as const
 
-export function ShopClient() {
+export function ShopClient({
+  products,
+  categories,
+}: {
+  products: Product[]
+  categories: CmsCategory[]
+}) {
   const [active, setActive] = useState<string>('All')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<string>('featured')
@@ -26,16 +33,25 @@ export function ShopClient() {
         p.description.toLowerCase().includes(query.toLowerCase())
       return matchCat && matchQuery
     })
-    if (sort === 'price-asc') list = [...list].sort((a, b) => a.price - b.price)
-    if (sort === 'price-desc') list = [...list].sort((a, b) => b.price - a.price)
-    if (sort === 'name') list = [...list].sort((a, b) => a.name.localeCompare(b.name))
+
+    if (sort === 'featured') {
+      list = [...list].sort((a, b) => Number(b.featured) - Number(a.featured))
+    }
+    if (sort === 'newest') {
+      list = [...list].sort(
+        (a, b) =>
+          new Date(b.createdAt ?? b.updatedAt ?? 0).getTime() -
+          new Date(a.createdAt ?? a.updatedAt ?? 0).getTime(),
+      )
+    }
+    if (sort === 'az') list = [...list].sort((a, b) => a.name.localeCompare(b.name))
+    if (sort === 'za') list = [...list].sort((a, b) => b.name.localeCompare(a.name))
     return list
-  }, [active, query, sort])
+  }, [active, products, query, sort])
 
   return (
     <section className="px-5 pb-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* Controls */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -44,6 +60,7 @@ export function ShopClient() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search the collection..."
+              aria-label="Search the collection"
               className="h-11 w-full rounded-full border border-border bg-card pl-10 pr-4 text-sm text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
             />
           </div>
@@ -66,9 +83,8 @@ export function ShopClient() {
           </div>
         </div>
 
-        {/* Category filters */}
         <div className="mt-6 flex flex-wrap gap-2">
-          {['All', ...categories].map((cat) => (
+          {['All', ...categories.map((cat) => cat.title)].map((cat) => (
             <button
               key={cat}
               type="button"
@@ -85,7 +101,6 @@ export function ShopClient() {
           ))}
         </div>
 
-        {/* Grid */}
         {filtered.length > 0 ? (
           <div className="mt-10 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
             {filtered.map((p) => (
@@ -93,9 +108,12 @@ export function ShopClient() {
             ))}
           </div>
         ) : (
-          <p className="mt-16 text-center text-muted-foreground">
-            No pieces match your search. Try a different category or keyword.
-          </p>
+          <div className="mx-auto mt-16 max-w-lg rounded-2xl border border-border bg-card px-6 py-10 text-center shadow-luxury">
+            <h2 className="font-serif text-2xl text-foreground">No pieces found</h2>
+            <p className="mt-3 text-muted-foreground">
+              This category is currently empty. Try Dresses or Scarves, or adjust your search.
+            </p>
+          </div>
         )}
       </div>
     </section>

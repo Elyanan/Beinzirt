@@ -5,6 +5,7 @@ import { PageBanner } from '@/components/page-banner'
 import { GalleryClient } from '@/components/gallery-client'
 import { Reveal } from '@/components/reveal'
 import { Button } from '@/components/ui/button'
+import { getGalleryItems } from '@/lib/sanity'
 
 import { pageImages } from '@/lib/images'
 
@@ -14,7 +15,9 @@ export const metadata: Metadata = {
     'Explore Beinzirt Design gallery — traditional clothing, handmade textiles, wedding designs, and artisan craftsmanship.',
 }
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const items = await getGalleryItems()
+
   return (
     <>
       <PageBanner
@@ -24,7 +27,7 @@ export default function GalleryPage() {
       />
 
       <section className="pb-20 pt-8">
-        <GalleryClient />
+        <GalleryClient items={items} />
       </section>
 
       <section className="px-5 pb-24 lg:px-8">

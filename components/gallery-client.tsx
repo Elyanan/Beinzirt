@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import type { GalleryFilter, GalleryItem } from '@/lib/data'
-import { galleryFilters, galleryItems } from '@/lib/data'
+import { galleryFilters } from '@/lib/data'
 import { Reveal } from '@/components/reveal'
 
 function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
@@ -19,7 +19,7 @@ function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
         <div className={cn('relative overflow-hidden', item.tall ? 'aspect-[3/4]' : 'aspect-[4/5]')}>
           <Image
             src={item.image}
-            alt={item.title}
+            alt={item.alt ?? item.title}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-110"
@@ -41,13 +41,13 @@ function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
   )
 }
 
-export function GalleryClient() {
+export function GalleryClient({ items }: { items: GalleryItem[] }) {
   const [active, setActive] = useState<GalleryFilter>('All')
 
   const filtered =
     active === 'All'
-      ? galleryItems
-      : galleryItems.filter((item) => item.filter === active)
+      ? items
+      : items.filter((item) => item.filter === active)
 
   return (
     <>
@@ -69,11 +69,20 @@ export function GalleryClient() {
         ))}
       </div>
 
-      <div className="mx-auto mt-10 grid max-w-7xl auto-rows-min grid-cols-1 gap-4 px-5 sm:grid-cols-2 lg:grid-cols-3 lg:px-8">
-        {filtered.map((item, i) => (
-          <GalleryCard key={item.id} item={item} index={i} />
-        ))}
-      </div>
+      {filtered.length ? (
+        <div className="mx-auto mt-10 grid max-w-7xl auto-rows-min grid-cols-1 gap-4 px-5 sm:grid-cols-2 lg:grid-cols-3 lg:px-8">
+          {filtered.map((item, i) => (
+            <GalleryCard key={item.id} item={item} index={i} />
+          ))}
+        </div>
+      ) : (
+        <div className="mx-auto mt-10 max-w-lg rounded-2xl border border-border bg-card px-6 py-10 text-center shadow-luxury">
+          <h2 className="font-serif text-2xl text-foreground">No gallery images yet</h2>
+          <p className="mt-3 text-muted-foreground">
+            This gallery filter is ready for new images from the admin dashboard.
+          </p>
+        </div>
+      )}
     </>
   )
 }

@@ -3,7 +3,7 @@ export const LOGO = '/logo.png'
 
 export const images = {
   logo: LOGO,
-  hero: '/images/together-1-min.jpg',
+  hero: '/images/hero.jpg',
   lifestyle: '/images/together-1-min.jpg',
   shop: '/images/shop-min.jpg',
   dresses: {
@@ -41,7 +41,6 @@ export const pageImages = {
   aboutBanner: images.lifestyle,
   aboutStory: images.shop,
   galleryBanner: d.d1,
-  blogBanner: d.d5,
   customOrderBanner: d.d7,
   contactStore: images.shop,
 } as const

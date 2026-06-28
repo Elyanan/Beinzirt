@@ -5,9 +5,9 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { pageImages } from '@/lib/images'
+import type { SiteHero } from '@/lib/sanity'
 
-export function HomeHero() {
+export function HomeHero({ hero }: { hero: SiteHero }) {
   const [offset, setOffset] = useState(0)
 
   useEffect(() => {
@@ -33,20 +33,19 @@ export function HomeHero() {
             className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-accent/40 bg-card/60 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-accent backdrop-blur"
             style={{ animationDelay: '0.05s' }}
           >
-            Handwoven in Addis Ababa
+            {hero.eyebrow}
           </span>
           <h1
             className="animate-fade-up mt-6 text-balance font-serif text-4xl leading-[1.05] text-foreground sm:text-5xl lg:text-6xl"
             style={{ animationDelay: '0.15s' }}
           >
-            Handcrafted Heritage, Worn with Pride!
+            {hero.heading}
           </h1>
           <p
             className="animate-fade-up mt-6 max-w-lg text-pretty text-lg leading-relaxed text-muted-foreground"
             style={{ animationDelay: '0.3s' }}
           >
-            Experience the timeless beauty of Ethiopian textiles, handmade
-            garments, and cultural designs crafted with care in Addis Ababa.
+            {hero.subtitle}
           </p>
           <div
             className="animate-fade-up mt-8 flex flex-wrap gap-3"
@@ -57,8 +56,8 @@ export function HomeHero() {
               size="lg"
               className="group rounded-full bg-primary px-7 text-primary-foreground hover:bg-primary/90"
             >
-              <Link href="/shop">
-                Explore Collection
+              <Link href={hero.buttonLink || '/shop'}>
+                {hero.buttonText}
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
@@ -68,7 +67,9 @@ export function HomeHero() {
               variant="outline"
               className="rounded-full border-foreground/20 px-7 hover:bg-foreground/5"
             >
-              <Link href="/custom-order">Custom Order</Link>
+              <Link href={hero.secondaryButtonLink || '/custom-order'}>
+                {hero.secondaryButtonText}
+              </Link>
             </Button>
           </div>
         </div>
@@ -79,8 +80,8 @@ export function HomeHero() {
             style={{ transform: `translateY(${offset * -0.06}px)` }}
           >
             <Image
-              src={pageImages.homeHero}
-              alt="Two models wearing elegant handwoven Ethiopian traditional clothing by Beinzirt"
+              src={hero.image}
+              alt={hero.imageAlt}
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 40vw"

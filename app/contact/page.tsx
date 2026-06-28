@@ -4,8 +4,8 @@ import { Phone, Mail, MapPin, Clock } from 'lucide-react'
 import { PageBanner } from '@/components/page-banner'
 import { ContactForm } from '@/components/contact-form'
 import { Reveal } from '@/components/reveal'
-import { contactInfo, GOOGLE_MAPS_EMBED } from '@/lib/data'
-import { pageImages } from '@/lib/images'
+import { SocialLinks } from '@/components/social-links'
+import { getContactContent } from '@/lib/sanity'
 
 export const metadata: Metadata = {
   title: 'Contact | Beinzirt Design',
@@ -13,20 +13,21 @@ export const metadata: Metadata = {
     'Contact Beinzirt Design in Addis Ababa. Visit our store, call us, or send a message about custom orders and handmade Ethiopian textiles.',
 }
 
-const infoCards = [
-  { icon: Phone, label: 'Phone Number', value: contactInfo.phone, href: undefined },
-  { icon: Mail, label: 'Email', value: contactInfo.email, href: `mailto:${contactInfo.email}` },
-  { icon: MapPin, label: 'Location', value: contactInfo.location, href: undefined },
-  { icon: Clock, label: 'Open Hours', value: contactInfo.hours, href: undefined },
-]
+export default async function ContactPage() {
+  const contact = await getContactContent()
+  const infoCards = [
+    { icon: Phone, label: 'Phone Number', value: contact.phone, href: undefined },
+    { icon: Mail, label: 'Email', value: contact.email, href: `mailto:${contact.email}` },
+    { icon: MapPin, label: 'Location', value: contact.address, href: undefined },
+    { icon: Clock, label: 'Open Hours', value: contact.hours, href: undefined },
+  ]
 
-export default function ContactPage() {
   return (
     <>
       <PageBanner
         title="Contact Us"
         subtitle="Have any queries? We're here to answer."
-        image={pageImages.contactStore}
+        image={contact.storeImage}
       />
 
       <section className="px-5 py-12 lg:px-8">
@@ -54,6 +55,14 @@ export default function ContactPage() {
             </Reveal>
           ))}
         </div>
+        <Reveal delay={180} className="mx-auto mt-8 max-w-6xl">
+          <div className="rounded-2xl border border-border/70 bg-card p-5 shadow-luxury">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+              Follow Beinzirt
+            </p>
+            <SocialLinks links={contact.socialLinks} className="mt-4" />
+          </div>
+        </Reveal>
       </section>
 
       <section className="bg-secondary/50 px-5 py-16 lg:px-8">
@@ -76,7 +85,7 @@ export default function ContactPage() {
             </p>
             <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-2xl border border-border/70 shadow-luxury">
               <Image
-                src={pageImages.contactStore}
+                src={contact.storeImage}
                 alt="Beinzirt Design store at Laphto Mall, Addis Ababa"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -85,7 +94,7 @@ export default function ContactPage() {
             </div>
             <div className="mt-6 overflow-hidden rounded-2xl border border-border/70 shadow-luxury">
               <iframe
-                src={GOOGLE_MAPS_EMBED}
+                src={contact.mapIframe}
                 title="Beinzirt Design location on Google Maps"
                 width="100%"
                 height="400"

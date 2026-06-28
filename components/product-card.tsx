@@ -2,21 +2,55 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
-import { Eye, Plus, Check, X } from 'lucide-react'
+import { Eye, Minus, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/components/cart-context'
 import type { Product } from '@/lib/data'
 import { IMAGE_FALLBACK } from '@/lib/images'
 
 export function ProductCard({ product }: { product: Product }) {
-  const { addItem } = useCart()
+  const { addItem, updateQuantity, getItemQuantity } = useCart()
   const [open, setOpen] = useState(false)
-  const [added, setAdded] = useState(false)
+  const quantity = getItemQuantity(product.id)
 
   function handleAdd() {
     addItem(product)
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1400)
+  }
+
+  function QuantityControl({ compact = false }: { compact?: boolean }) {
+    if (quantity <= 0) {
+      return (
+        <Button
+          size={compact ? 'sm' : 'lg'}
+          onClick={handleAdd}
+          className="rounded-full bg-primary px-3.5 text-primary-foreground hover:bg-primary/90"
+        >
+          <Plus className="size-3.5" /> Add to Cart
+        </Button>
+      )
+    }
+
+    return (
+      <div className="animate-fade-up flex items-center rounded-full border border-border bg-background shadow-sm">
+        <button
+          type="button"
+          aria-label={`Decrease ${product.name} quantity`}
+          onClick={() => updateQuantity(product.id, quantity - 1)}
+          className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary"
+        >
+          <Minus className="size-3.5" />
+        </button>
+        <span className="min-w-9 text-center text-sm font-semibold">{quantity}</span>
+        <button
+          type="button"
+          aria-label={`Increase ${product.name} quantity`}
+          onClick={() => updateQuantity(product.id, quantity + 1)}
+          className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary"
+        >
+          <Plus className="size-3.5" />
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -49,21 +83,7 @@ export function ProductCard({ product }: { product: Product }) {
           </p>
           <div className="mt-4 flex items-center justify-between">
             <span className="font-serif text-xl text-primary">${product.price}</span>
-            <Button
-              size="sm"
-              onClick={handleAdd}
-              className="rounded-full bg-primary px-3.5 text-primary-foreground hover:bg-primary/90"
-            >
-              {added ? (
-                <>
-                  <Check className="size-3.5" /> Added
-                </>
-              ) : (
-                <>
-                  <Plus className="size-3.5" /> Add
-                </>
-              )}
-            </Button>
+            <QuantityControl compact />
           </div>
         </div>
       </article>
@@ -107,15 +127,9 @@ export function ProductCard({ product }: { product: Product }) {
               </p>
               <p className="font-serif text-3xl text-primary">${product.price}</p>
               <p className="text-xs text-muted-foreground">
-                Handwoven to order · Free worldwide shipping over $300
+                Handwoven to order - Free worldwide shipping over $300
               </p>
-              <Button
-                onClick={handleAdd}
-                size="lg"
-                className="mt-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                {added ? 'Added to Cart' : 'Add to Cart'}
-              </Button>
+              <QuantityControl />
             </div>
           </div>
         </div>

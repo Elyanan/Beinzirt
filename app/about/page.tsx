@@ -5,8 +5,7 @@ import { PageBanner } from '@/components/page-banner'
 import { SectionHeading } from '@/components/section-heading'
 import { Reveal } from '@/components/reveal'
 import { CtaSection } from '@/components/cta-section'
-import { aboutValues } from '@/lib/data'
-import { pageImages } from '@/lib/images'
+import { getAboutContent } from '@/lib/sanity'
 
 export const metadata: Metadata = {
   title: 'About | Beinzirt Design',
@@ -16,20 +15,15 @@ export const metadata: Metadata = {
 
 const valueIcons = [Sparkles, Heart, Users, Palette]
 
-const paragraphs = [
-  'Selam, a visionary designer, was inspired by the rich tapestry of Ethiopian culture. She saw the beauty in traditional textiles and the potential to breathe new life into them. With a passion for design and a commitment to empowering women, she founded Beinzirt.',
-  "Beinzirt's journey began with a small workshop where skilled artisans transformed handwoven cotton into stunning garments. Each piece is a labor of love, reflecting the intricate details and unique patterns of Ethiopian heritage. From the delicate Menen to the sturdy Gabi, every fabric tells a story woven with care and precision.",
-  "Selam's vision extends beyond fashion. She is committed to empowering women by providing training and opportunities. By supporting local artisans, Beinzirt contributes to the economic growth of the community.",
-  'Today, Beinzirt has grown into a thriving business offering elegant dresses, stylish shirts, traditional Gabi, and cozy home textiles. The flagship store in Addis Ababa is a haven for those who appreciate the beauty of Ethiopian design.',
-]
+export default async function AboutPage() {
+  const about = await getAboutContent()
 
-export default function AboutPage() {
   return (
     <>
       <PageBanner
         title="About Beinzirt"
         subtitle="Handcrafted Ethiopian heritage, reimagined for modern life."
-        image={pageImages.aboutBanner}
+        image={about.bannerImage}
       />
 
       <section className="px-5 py-12 lg:px-8">
@@ -37,7 +31,7 @@ export default function AboutPage() {
           <Reveal className="relative lg:sticky lg:top-28">
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
               <Image
-                src={pageImages.aboutStory}
+                src={about.storyImage}
                 alt="Beinzirt flagship store — handmade Ethiopian textiles in Addis Ababa"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -50,11 +44,21 @@ export default function AboutPage() {
           <Reveal delay={120}>
             <SectionHeading align="left" eyebrow="Our Story" title="Who We Are" />
             <div className="mt-5 space-y-4">
-              {paragraphs.map((p) => (
+              {about.storyParagraphs.map((p) => (
                 <p key={p.slice(0, 24)} className="leading-relaxed text-muted-foreground">
                   {p}
                 </p>
               ))}
+            </div>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-xl border border-border/70 bg-card p-5">
+                <h3 className="font-serif text-xl text-foreground">Mission</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{about.mission}</p>
+              </div>
+              <div className="rounded-xl border border-border/70 bg-card p-5">
+                <h3 className="font-serif text-xl text-foreground">Vision</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{about.vision}</p>
+              </div>
             </div>
           </Reveal>
         </div>
@@ -65,7 +69,7 @@ export default function AboutPage() {
           <SectionHeading eyebrow="Our Values" title="What We Stand For" />
         </Reveal>
         <div className="mx-auto mt-12 grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {aboutValues.map((v, i) => {
+          {about.values.map((v, i) => {
             const Icon = valueIcons[i] ?? Sparkles
             return (
               <Reveal key={v.title} delay={(i % 4) * 100}>

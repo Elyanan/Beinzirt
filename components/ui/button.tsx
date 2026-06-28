@@ -59,6 +59,7 @@ function Button({
   if (asChild) {
     const child = React.Children.only(children) as React.ReactElement<{
       className?: string
+      'data-slot'?: string
     }>
 
     return React.cloneElement(child, {

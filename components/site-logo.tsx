@@ -7,12 +7,14 @@ type SiteLogoProps = {
   variant?: 'default' | 'inverse'
   className?: string
   showWordmark?: boolean
+  size?: 'nav' | 'footer'
 }
 
 export function SiteLogo({
   variant = 'default',
   className,
-  showWordmark = true,
+  showWordmark = false,
+  size = 'nav',
 }: SiteLogoProps) {
   const inverse = variant === 'inverse'
 
@@ -20,10 +22,13 @@ export function SiteLogo({
     <Link href="/" className={cn('group flex items-center gap-3', className)}>
       <Image
         src={LOGO}
-        alt="Beinzirt Design — Ethiopian traditional clothing"
-        width={48}
-        height={48}
-        className="size-10 shrink-0 object-contain transition-opacity group-hover:opacity-90 sm:size-11"
+        alt="Beinzirt Design logo"
+        width={180}
+        height={100}
+        className={cn(
+          'shrink-0 object-contain transition-opacity group-hover:opacity-90',
+          size === 'footer' ? 'h-24 w-auto sm:h-28' : 'h-14 w-auto sm:h-16',
+        )}
         priority
       />
       {showWordmark && (
@@ -34,7 +39,7 @@ export function SiteLogo({
               inverse ? 'text-primary-foreground' : 'text-foreground',
             )}
           >
-            በእንዝርት
+            Beinzirt
           </span>
           <span
             className={cn(
@@ -44,7 +49,7 @@ export function SiteLogo({
                 : 'text-muted-foreground group-hover:text-accent',
             )}
           >
-            Beinzirt Design
+            Design
           </span>
         </div>
       )}
