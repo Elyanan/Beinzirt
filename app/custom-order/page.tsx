@@ -7,6 +7,7 @@ import { CustomOrderForm } from '@/components/custom-order-form'
 import { Reveal } from '@/components/reveal'
 import { Button } from '@/components/ui/button'
 import { customOrderSteps } from '@/lib/data'
+import { pageImages } from '@/lib/images'
 
 export const metadata: Metadata = {
   title: 'Custom Order | Beinzirt Design',
@@ -20,7 +21,7 @@ export default function CustomOrderPage() {
       <PageBanner
         title="Custom Orders"
         subtitle="Send us your idea, sample design, or occasion details, and we'll help bring your vision to life."
-        image="/images/gallery-textile.svg"
+        image={pageImages.customOrderBanner}
       />
 
       <section className="px-5 py-16 lg:px-8">

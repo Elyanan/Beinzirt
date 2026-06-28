@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import type { BlogPost } from '@/lib/data'
+import { IMAGE_FALLBACK } from '@/lib/images'
 
 export function BlogCard({ post, featured = false }: { post: BlogPost; featured?: boolean }) {
   return (
@@ -16,7 +17,7 @@ export function BlogCard({ post, featured = false }: { post: BlogPost; featured?
         }`}
       >
         <Image
-          src={post.image || '/placeholder.svg'}
+          src={post.image || IMAGE_FALLBACK}
           alt={post.title}
           fill
           sizes={featured ? '(max-width: 768px) 100vw, 50vw' : '(max-width: 768px) 100vw, 33vw'}

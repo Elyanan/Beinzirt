@@ -1,3 +1,5 @@
+import { images } from '@/lib/images'
+
 export type Product = {
   id: string
   name: string
@@ -6,6 +8,8 @@ export type Product = {
   image: string
   description: string
 }
+
+const { dresses: d, scarves: s, shop, lifestyle } = images
 
 export const categories = [
   'Dresses',
@@ -26,7 +30,7 @@ export const products: Product[] = [
     name: 'Menen Habesha Kemis',
     category: 'Dresses',
     price: 240,
-    image: '/images/product-dress.svg',
+    image: d.d1,
     description:
       'A flowing handwoven cotton dress finished with a delicate gold tibeb border, perfect for ceremonies and celebrations.',
   },
@@ -35,7 +39,7 @@ export const products: Product[] = [
     name: 'Zuria Ceremonial Dress',
     category: 'Dresses',
     price: 285,
-    image: '/images/product-dress.svg',
+    image: d.d2,
     description:
       'An elegant ceremonial gown with intricate hand-embroidered borders in red, green and gold.',
   },
@@ -44,7 +48,7 @@ export const products: Product[] = [
     name: 'Classic Handwoven Gabi',
     category: 'Gabi',
     price: 165,
-    image: '/images/product-gabi.svg',
+    image: d.d3,
     description:
       'A soft, breathable four-layer cotton gabi wrap, woven by hand for warmth and timeless comfort.',
   },
@@ -53,7 +57,7 @@ export const products: Product[] = [
     name: "Men's Tibeb Shirt",
     category: 'Shirts',
     price: 130,
-    image: '/images/product-shirt.svg',
+    image: d.d4,
     description:
       'A refined handwoven shirt with embroidered placket and collar detail for him.',
   },
@@ -62,7 +66,7 @@ export const products: Product[] = [
     name: 'Netela Sheer Scarf',
     category: 'Scarves',
     price: 75,
-    image: '/images/product-scarf.svg',
+    image: s.s1,
     description:
       'A sheer, lightweight netela with a vivid woven border — an everyday emblem of heritage.',
   },
@@ -71,7 +75,7 @@ export const products: Product[] = [
     name: 'Tibeb Cotton Top',
     category: 'Tops',
     price: 95,
-    image: '/images/product-dress.svg',
+    image: d.d5,
     description:
       'A modern handwoven top blending contemporary cut with traditional border work.',
   },
@@ -80,7 +84,7 @@ export const products: Product[] = [
     name: 'Heritage Curtain Panel',
     category: 'Curtains',
     price: 210,
-    image: '/images/product-curtain.svg',
+    image: s.s2,
     description:
       'Hand-loomed curtain panels that bring warm cultural texture to any room.',
   },
@@ -89,7 +93,7 @@ export const products: Product[] = [
     name: 'Tibeb Pillow Cover Set',
     category: 'Pillow Covers',
     price: 60,
-    image: '/images/product-pillow.svg',
+    image: s.s3,
     description:
       'A set of decorative cushion covers with handwoven geometric tibeb motifs.',
   },
@@ -98,7 +102,7 @@ export const products: Product[] = [
     name: 'Woven Table Runner',
     category: 'Table Runners',
     price: 70,
-    image: '/images/product-runner.svg',
+    image: d.d8,
     description:
       'A statement table runner with a colorful border, handmade to elevate every gathering.',
   },
@@ -107,7 +111,7 @@ export const products: Product[] = [
     name: "Children's Habesha Set",
     category: "Children's Wear",
     price: 85,
-    image: '/images/product-kids.svg',
+    image: d.d6,
     description:
       'An adorable handmade outfit for little ones, crafted for cultural celebrations.',
   },
@@ -116,7 +120,7 @@ export const products: Product[] = [
     name: 'Golden Border Shawl',
     category: 'Scarves',
     price: 110,
-    image: '/images/product-scarf.svg',
+    image: s.s4,
     description:
       'A luxurious shawl with a rich golden woven border for special occasions.',
   },
@@ -125,53 +129,53 @@ export const products: Product[] = [
     name: 'Premium Cotton Gabi',
     category: 'Gabi',
     price: 220,
-    image: '/images/product-gabi.svg',
+    image: d.d7,
     description:
       'Our finest, densely woven gabi — soft, enduring, and beautifully finished.',
   },
 ]
 
 export const homeCategories = [
-  { name: 'Ethiopian Traditional Dresses', image: '/images/product-dress.svg', slug: 'Dresses' },
-  { name: 'Gabi', image: '/images/product-gabi.svg', slug: 'Gabi' },
-  { name: "Men's Traditional Shirts", image: '/images/product-shirt.svg', slug: 'Shirts' },
-  { name: 'Scarves', image: '/images/product-scarf.svg', slug: 'Scarves' },
-  { name: 'Curtains', image: '/images/product-curtain.svg', slug: 'Curtains' },
-  { name: 'Pillow Covers', image: '/images/product-pillow.svg', slug: 'Pillow Covers' },
-  { name: 'Table Runners', image: '/images/product-runner.svg', slug: 'Table Runners' },
-  { name: "Children's Traditional Wear", image: '/images/product-kids.svg', slug: "Children's Wear" },
+  { name: 'Ethiopian Traditional Dresses', image: d.d1, slug: 'Dresses' },
+  { name: 'Gabi', image: d.d3, slug: 'Gabi' },
+  { name: "Men's Traditional Shirts", image: d.d4, slug: 'Shirts' },
+  { name: 'Scarves', image: s.s1, slug: 'Scarves' },
+  { name: 'Curtains', image: s.s2, slug: 'Curtains' },
+  { name: 'Pillow Covers', image: s.s3, slug: 'Pillow Covers' },
+  { name: 'Table Runners', image: d.d8, slug: 'Table Runners' },
+  { name: "Children's Traditional Wear", image: d.d6, slug: "Children's Wear" },
 ]
 
 export const useCases = [
   {
     title: 'Festivals & Cultural Events',
     text: 'Traditional attire and textiles for cultural or religious festivals, ceremonies, and community gatherings.',
-    image: '/images/gallery-festival.svg',
+    image: d.d2,
   },
   {
     title: 'Everyday Wear',
     text: 'Traditional clothes worn in daily life, blending comfort and cultural expression.',
-    image: '/images/gallery-everyday.svg',
+    image: d.d5,
   },
   {
     title: 'Special Occasions',
     text: 'Elegant traditional outfits and table settings for formal events, parties, and family gatherings.',
-    image: '/images/gallery-home.svg',
+    image: d.d9,
   },
   {
     title: 'Weddings & Celebrations',
     text: "Perfect for bridal wear, groom's attire, guest outfits, and decorative wedding textiles.",
-    image: '/images/gallery-wedding.svg',
+    image: lifestyle,
   },
   {
     title: "Children's Traditional Wear",
     text: 'Adorable handmade outfits for kids, perfect for family events or cultural celebrations.',
-    image: '/images/product-kids.svg',
+    image: d.d6,
   },
   {
     title: 'Custom & Personalized Orders',
     text: 'Bespoke creations tailored to individual preferences for unique occasions or personal use.',
-    image: '/images/gallery-textile.svg',
+    image: d.d7,
   },
 ]
 
@@ -207,7 +211,7 @@ export const galleryFilters: GalleryFilter[] = [
 export const galleryItems: GalleryItem[] = [
   {
     id: 'g1',
-    image: '/images/gallery-wedding.svg',
+    image: d.d1,
     filter: 'Weddings',
     category: 'Weddings',
     title: 'Wedding Cultural Outfit',
@@ -216,7 +220,7 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: 'g2',
-    image: '/images/product-dress.svg',
+    image: d.d2,
     filter: 'Women',
     category: 'Traditional Dresses',
     title: 'Handwoven Traditional Dress',
@@ -224,7 +228,7 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: 'g3',
-    image: '/images/gallery-textile.svg',
+    image: d.d3,
     filter: 'Women',
     category: 'Textile Patterns',
     title: 'Embroidered Textile Pattern',
@@ -232,24 +236,24 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: 'g4',
-    image: '/images/workshop.svg',
+    image: shop,
     filter: 'Workshop',
-    category: 'Artisan Process',
-    title: 'Artisan Workshop Detail',
-    caption: 'Skilled hands at the loom in our Addis Ababa studio.',
+    category: 'Our Store',
+    title: 'Beinzirt Flagship Store',
+    caption: 'Visit our Laphto Mall showroom in Addis Ababa.',
     tall: true,
   },
   {
     id: 'g5',
-    image: '/images/gallery-home.svg',
+    image: s.s1,
     filter: 'Home Textiles',
-    category: 'Home Textiles',
-    title: 'Heritage Home Collection',
-    caption: 'Coordinated textiles for an elegant living space.',
+    category: 'Accessories',
+    title: 'Golden Border Netela',
+    caption: 'Sheer scarf with rich woven border accents.',
   },
   {
     id: 'g6',
-    image: '/images/gallery-festival.svg',
+    image: d.d4,
     filter: 'Women',
     category: 'Cultural Events',
     title: 'Festival Celebration Wear',
@@ -258,15 +262,15 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: 'g7',
-    image: '/images/product-scarf.svg',
+    image: s.s2,
     filter: 'Women',
     category: 'Scarves',
-    title: 'Golden Border Netela',
-    caption: 'Sheer scarf with rich woven border accents.',
+    title: 'Handwoven Scarf Detail',
+    caption: 'Fine cotton netela with traditional tibeb edge.',
   },
   {
     id: 'g8',
-    image: '/images/gallery-everyday.svg',
+    image: d.d5,
     filter: 'Women',
     category: 'Everyday Wear',
     title: 'Everyday Elegance',
@@ -274,7 +278,7 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: 'g9',
-    image: '/images/product-gabi.svg',
+    image: d.d6,
     filter: 'Men',
     category: 'Gabi',
     title: 'Elegant Gabi Detail',
@@ -282,7 +286,7 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: 'g10',
-    image: '/images/product-shirt.svg',
+    image: d.d7,
     filter: 'Men',
     category: 'Shirts',
     title: "Men's Traditional Shirt",
@@ -290,24 +294,24 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: 'g11',
-    image: '/images/product-pillow.svg',
+    image: s.s3,
     filter: 'Home Textiles',
-    category: 'Pillow Covers',
-    title: 'Handmade Pillow Cover',
-    caption: 'Decorative cushion with geometric motifs.',
+    category: 'Textiles',
+    title: 'Woven Textile Close-up',
+    caption: 'Decorative handloom patterns and motifs.',
     tall: true,
   },
   {
     id: 'g12',
-    image: '/images/product-runner.svg',
+    image: s.s4,
     filter: 'Home Textiles',
-    category: 'Table Runners',
-    title: 'Traditional Table Runner',
-    caption: 'Statement runner for gatherings and celebrations.',
+    category: 'Accessories',
+    title: 'Golden Border Shawl',
+    caption: 'Luxurious shawl for special occasions.',
   },
   {
     id: 'g13',
-    image: '/images/product-kids.svg',
+    image: d.d8,
     filter: 'Children',
     category: "Children's Wear",
     title: "Children's Celebration Wear",
@@ -315,7 +319,7 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: 'g14',
-    image: '/images/gallery-wedding.svg',
+    image: d.d9,
     filter: 'Weddings',
     category: 'Weddings',
     title: 'Bridal Tibeb Border',
@@ -323,24 +327,24 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: 'g15',
-    image: '/images/product-curtain.svg',
-    filter: 'Home Textiles',
-    category: 'Curtains',
-    title: 'Woven Curtain Panel',
-    caption: 'Hand-loomed panels with cultural texture.',
+    image: lifestyle,
+    filter: 'Weddings',
+    category: 'Lifestyle',
+    title: 'Celebration in Tradition',
+    caption: 'Models wearing Beinzirt ceremonial attire.',
     tall: true,
   },
   {
     id: 'g16',
-    image: '/images/workshop.svg',
+    image: shop,
     filter: 'Workshop',
     category: 'Workshop',
-    title: 'Loom Weaving Process',
-    caption: 'Traditional techniques passed through generations.',
+    title: 'Our Addis Ababa Store',
+    caption: 'Where heritage meets modern elegance.',
   },
   {
     id: 'g17',
-    image: '/images/product-dress.svg',
+    image: d.d1,
     filter: 'Women',
     category: 'Dresses',
     title: 'Ceremonial Habesha Kemis',
@@ -348,11 +352,11 @@ export const galleryItems: GalleryItem[] = [
   },
   {
     id: 'g18',
-    image: '/images/product-gabi.svg',
-    filter: 'Men',
-    category: 'Gabi',
-    title: 'Premium Cotton Gabi',
-    caption: 'Dense weave for warmth and lasting comfort.',
+    image: d.d9,
+    filter: 'Women',
+    category: 'Dresses',
+    title: 'Formal Traditional Dress',
+    caption: 'Statement piece for your most treasured occasions.',
   },
 ]
 
@@ -373,7 +377,7 @@ export const blogPosts: BlogPost[] = [
     date: 'March 12, 2026',
     excerpt:
       'Explore how Ethiopian clothing carries identity, heritage, faith, and family tradition through fabric and detail.',
-    image: '/images/gallery-festival.svg',
+    image: d.d1,
   },
   {
     slug: 'style-ethiopian-textiles-modern',
@@ -382,7 +386,7 @@ export const blogPosts: BlogPost[] = [
     date: 'February 28, 2026',
     excerpt:
       'Discover ways to blend traditional fabrics with modern silhouettes for weddings, gatherings, and everyday elegance.',
-    image: '/images/blog-styling.svg',
+    image: lifestyle,
   },
   {
     slug: 'beauty-of-handmade-gabi',
@@ -391,7 +395,7 @@ export const blogPosts: BlogPost[] = [
     date: 'February 10, 2026',
     excerpt:
       'A closer look at one of Ethiopia\'s most beloved traditional garments and why handmade quality matters.',
-    image: '/images/product-gabi.svg',
+    image: d.d3,
   },
   {
     slug: 'why-handmade-matters',
@@ -400,7 +404,7 @@ export const blogPosts: BlogPost[] = [
     date: 'January 22, 2026',
     excerpt:
       'Handmade fashion supports artisans, reduces mass-production waste, and creates meaningful pieces that last.',
-    image: '/images/workshop.svg',
+    image: shop,
   },
   {
     slug: 'ethiopian-wedding-fashion',
@@ -409,7 +413,7 @@ export const blogPosts: BlogPost[] = [
     date: 'January 8, 2026',
     excerpt:
       'Ideas for bridal wear, groom attire, guest outfits, and decorative textiles for unforgettable celebrations.',
-    image: '/images/gallery-wedding.svg',
+    image: d.d9,
   },
   {
     slug: 'workshop-to-wardrobe',
@@ -418,7 +422,7 @@ export const blogPosts: BlogPost[] = [
     date: 'December 18, 2025',
     excerpt:
       'Follow the journey of a Beinzirt piece from fabric selection to hand finishing.',
-    image: '/images/about-founder.svg',
+    image: d.d2,
   },
 ]
 

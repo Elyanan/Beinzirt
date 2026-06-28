@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import { Phone, Mail, MapPin, Clock } from 'lucide-react'
 import { PageBanner } from '@/components/page-banner'
 import { ContactForm } from '@/components/contact-form'
 import { Reveal } from '@/components/reveal'
 import { contactInfo, GOOGLE_MAPS_EMBED } from '@/lib/data'
+import { pageImages } from '@/lib/images'
 
 export const metadata: Metadata = {
   title: 'Contact | Beinzirt Design',
@@ -24,6 +26,7 @@ export default function ContactPage() {
       <PageBanner
         title="Contact Us"
         subtitle="Have any queries? We're here to answer."
+        image={pageImages.contactStore}
       />
 
       <section className="px-5 py-12 lg:px-8">
@@ -71,7 +74,16 @@ export default function ContactPage() {
               Find us at Laphto Mall in Addis Ababa. We welcome walk-ins during
               opening hours.
             </p>
-            <div className="mt-8 overflow-hidden rounded-2xl border border-border/70 shadow-luxury">
+            <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-2xl border border-border/70 shadow-luxury">
+              <Image
+                src={pageImages.contactStore}
+                alt="Beinzirt Design store at Laphto Mall, Addis Ababa"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="mt-6 overflow-hidden rounded-2xl border border-border/70 shadow-luxury">
               <iframe
                 src={GOOGLE_MAPS_EMBED}
                 title="Beinzirt Design location on Google Maps"

@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/components/cart-context'
+import { IMAGE_FALLBACK } from '@/lib/images'
 
 export function CartClient() {
   const { items, subtotal, updateQuantity, removeItem, clear } = useCart()
@@ -60,7 +61,7 @@ export function CartClient() {
             <li key={item.id} className="flex gap-4 p-4 sm:p-5">
               <div className="relative size-24 shrink-0 overflow-hidden rounded-lg">
                 <Image
-                  src={item.image || '/placeholder.svg'}
+                  src={item.image || IMAGE_FALLBACK}
                   alt={item.name}
                   fill
                   sizes="96px"

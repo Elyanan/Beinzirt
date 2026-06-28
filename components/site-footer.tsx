@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Phone, Mail, MapPin, Clock } from 'lucide-react'
 import { contactInfo, footerCompanyLinks } from '@/lib/data'
+import { SiteLogo } from '@/components/site-logo'
 
 export function SiteFooter() {
   return (
@@ -8,7 +9,7 @@ export function SiteFooter() {
       <div className="pattern-strip h-1 w-full" />
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-5 lg:px-8">
         <div className="lg:col-span-2">
-          <p className="font-serif text-2xl">በእንዝርት — Beinzirt Design</p>
+          <SiteLogo variant="inverse" />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-primary-foreground/70">
             Handmade Ethiopian traditional clothing and textiles crafted with
             pride in Addis Ababa.

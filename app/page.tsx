@@ -8,6 +8,7 @@ import { Reveal } from '@/components/reveal'
 import { CtaSection } from '@/components/cta-section'
 import { BlogCard } from '@/components/blog-card'
 import { homeCategories, useCases, blogPosts, products } from '@/lib/data'
+import { pageImages } from '@/lib/images'
 
 const features = [
   {
@@ -38,7 +39,7 @@ export default function HomePage() {
           <Reveal className="relative">
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
               <Image
-                src="/images/gallery-textile.svg"
+                src={pageImages.homeHeritage}
                 alt="Close-up of intricate handwoven Ethiopian tibeb textile"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -103,8 +104,8 @@ export default function HomePage() {
           <Reveal delay={120} className="relative">
             <div className="relative aspect-[4/5] max-w-sm overflow-hidden rounded-2xl lg:ml-auto">
               <Image
-                src="/images/about-founder.svg"
-                alt="Selam, founder of Beinzirt, in her textile workshop"
+                src={pageImages.homeStory}
+                alt="Beinzirt flagship store in Addis Ababa"
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 className="object-cover"
@@ -158,7 +159,7 @@ export default function HomePage() {
                 >
                   <div className="relative aspect-square overflow-hidden">
                     <Image
-                      src={cat.image || '/placeholder.svg'}
+                      src={cat.image}
                       alt={cat.name}
                       fill
                       sizes="(max-width: 768px) 50vw, 25vw"
@@ -196,7 +197,7 @@ export default function HomePage() {
             <Reveal key={uc.title} delay={(i % 3) * 100}>
               <div className="group relative h-72 overflow-hidden rounded-2xl">
                 <Image
-                  src={uc.image || '/placeholder.svg'}
+                  src={uc.image}
                   alt={uc.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
@@ -231,8 +232,8 @@ export default function HomePage() {
         <Reveal className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl">
           <div className="relative aspect-video">
             <Image
-              src="/images/video-poster.svg"
-              alt="Ethiopian weaving workshop with artisans at traditional looms"
+              src={pageImages.homeVideo}
+              alt="Beinzirt store and artisan workshop in Addis Ababa"
               fill
               sizes="100vw"
               className="object-cover"

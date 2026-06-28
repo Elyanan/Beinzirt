@@ -7,6 +7,7 @@ import { Menu, X, ShoppingBag } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { navLinks } from '@/lib/data'
 import { useCart } from '@/components/cart-context'
+import { SiteLogo } from '@/components/site-logo'
 
 export function SiteHeader() {
   const pathname = usePathname()
@@ -44,14 +45,7 @@ export function SiteHeader() {
     >
       <div className="pattern-strip h-1 w-full opacity-80" />
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <Link href="/" className="group flex flex-col leading-none">
-          <span className="font-serif text-xl tracking-tight text-foreground">
-            በእንዝርት
-          </span>
-          <span className="text-[0.65rem] font-medium uppercase tracking-[0.32em] text-muted-foreground transition-colors group-hover:text-accent">
-            Beinzirt Design
-          </span>
-        </Link>
+        <SiteLogo />
 
         <nav className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => {

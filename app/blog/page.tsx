@@ -6,6 +6,7 @@ import { BlogCard } from '@/components/blog-card'
 import { Reveal } from '@/components/reveal'
 import { Button } from '@/components/ui/button'
 import { blogPosts } from '@/lib/data'
+import { pageImages } from '@/lib/images'
 
 export const metadata: Metadata = {
   title: 'Blog | Beinzirt Design',
@@ -21,7 +22,7 @@ export default function BlogPage() {
       <PageBanner
         title="Stories & Inspiration"
         subtitle="Learn about Ethiopian textiles, styling ideas, cultural fashion, and handmade craftsmanship."
-        image="/images/gallery-festival.svg"
+        image={pageImages.blogBanner}
       />
 
       <section className="px-5 py-12 lg:px-8">

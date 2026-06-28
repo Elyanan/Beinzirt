@@ -6,6 +6,8 @@ import { GalleryClient } from '@/components/gallery-client'
 import { Reveal } from '@/components/reveal'
 import { Button } from '@/components/ui/button'
 
+import { pageImages } from '@/lib/images'
+
 export const metadata: Metadata = {
   title: 'Gallery | Beinzirt Design',
   description:
@@ -18,7 +20,7 @@ export default function GalleryPage() {
       <PageBanner
         title="Gallery"
         subtitle="Explore our traditional clothing, handmade textiles, wedding designs, and artisan details."
-        image="/images/gallery-wedding.svg"
+        image={pageImages.galleryBanner}
       />
 
       <section className="pb-20 pt-8">

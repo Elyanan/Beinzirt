@@ -6,6 +6,7 @@ import { Eye, Plus, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/components/cart-context'
 import type { Product } from '@/lib/data'
+import { IMAGE_FALLBACK } from '@/lib/images'
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart()
@@ -23,7 +24,7 @@ export function ProductCard({ product }: { product: Product }) {
       <article className="group flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-luxury transition-all duration-500 hover:-translate-y-1 hover:shadow-luxury-hover">
         <div className="relative aspect-[4/5] overflow-hidden">
           <Image
-            src={product.image || '/placeholder.svg'}
+            src={product.image || IMAGE_FALLBACK}
             alt={product.name}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
@@ -89,7 +90,7 @@ export function ProductCard({ product }: { product: Product }) {
             </button>
             <div className="relative aspect-square md:aspect-auto">
               <Image
-                src={product.image || '/placeholder.svg'}
+                src={product.image || IMAGE_FALLBACK}
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"

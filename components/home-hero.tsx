@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { pageImages } from '@/lib/images'
 
 export function HomeHero() {
   const [offset, setOffset] = useState(0)
@@ -78,8 +79,8 @@ export function HomeHero() {
             style={{ transform: `translateY(${offset * -0.06}px)` }}
           >
             <Image
-              src="/images/hero.svg"
-              alt="Model wearing an elegant handwoven Ethiopian habesha dress with colorful tibeb border"
+              src={pageImages.homeHero}
+              alt="Two models wearing elegant handwoven Ethiopian traditional clothing by Beinzirt"
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 40vw"

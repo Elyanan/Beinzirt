@@ -6,6 +6,7 @@ import { SectionHeading } from '@/components/section-heading'
 import { Reveal } from '@/components/reveal'
 import { CtaSection } from '@/components/cta-section'
 import { aboutValues } from '@/lib/data'
+import { pageImages } from '@/lib/images'
 
 export const metadata: Metadata = {
   title: 'About | Beinzirt Design',
@@ -28,7 +29,7 @@ export default function AboutPage() {
       <PageBanner
         title="About Beinzirt"
         subtitle="Handcrafted Ethiopian heritage, reimagined for modern life."
-        image="/images/about-founder.svg"
+        image={pageImages.aboutBanner}
       />
 
       <section className="px-5 py-12 lg:px-8">
@@ -36,8 +37,8 @@ export default function AboutPage() {
           <Reveal className="relative lg:sticky lg:top-28">
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
               <Image
-                src="/images/about-founder.svg"
-                alt="Selam, founder of Beinzirt, in her textile workshop"
+                src={pageImages.aboutStory}
+                alt="Beinzirt flagship store — handmade Ethiopian textiles in Addis Ababa"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
