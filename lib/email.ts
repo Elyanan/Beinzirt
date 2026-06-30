@@ -1,4 +1,6 @@
+import { Resend } from 'resend'
 import { formatBirr, formatUsd } from '@/lib/pricing'
+import { RESEND_FROM_EMAIL } from '@/lib/email-config'
 import type { OrderLineItem } from '@/lib/sanity'
 
 type SendEmailInput = {
@@ -9,7 +11,7 @@ type SendEmailInput = {
 }
 
 type SendEmailResult =
-  | { ok: true }
+  | { ok: true; id?: string }
   | { ok: false; skipped?: boolean; error: string }
 
 export type ContactEmailData = {
@@ -62,45 +64,54 @@ const brandStyle = {
   primary: '#3b3024',
 }
 
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) return null
+  return new Resend(apiKey)
+}
+
 export async function sendEmail({
   to,
   subject,
   html,
   replyTo,
 }: SendEmailInput): Promise<SendEmailResult> {
-  const apiKey = process.env.RESEND_API_KEY
+  const resend = getResendClient()
 
-  if (!apiKey) {
+  if (!resend) {
     return { ok: false, skipped: true, error: 'Email service is not configured.' }
   }
 
-  const body: Record<string, unknown> = {
-    from: process.env.RESEND_FROM_EMAIL || 'Beinzirt <onboarding@resend.dev>',
-    to,
-    subject,
-    html,
-  }
+  const from = process.env.RESEND_FROM_EMAIL || RESEND_FROM_EMAIL
 
-  if (replyTo) body.reply_to = replyTo
-
-  try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-      cache: 'no-store',
+  const sendOnce = () =>
+    resend.emails.send({
+      from,
+      to: [to],
+      subject,
+      html,
+      replyTo: replyTo ? [replyTo] : undefined,
     })
 
-    if (!response.ok) {
-      const message = await response.text()
-      return { ok: false, error: message || 'Email delivery failed.' }
+  try {
+    let result = await sendOnce()
+
+    if (result.error && (result.error.name === 'rate_limit_exceeded' || result.error.message.includes('429'))) {
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      result = await sendOnce()
     }
 
-    return { ok: true }
+    if (result.error) {
+      console.error('Resend email error:', result.error)
+      return {
+        ok: false,
+        error: `${result.error.name}: ${result.error.message}`,
+      }
+    }
+
+    return { ok: true, id: result.data?.id }
   } catch (error) {
+    console.error('Resend email exception:', error)
     return {
       ok: false,
       error: error instanceof Error ? error.message : 'Email delivery failed.',

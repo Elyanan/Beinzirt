@@ -8,7 +8,6 @@ import { SectionHeading } from '@/components/section-heading'
 import { Reveal } from '@/components/reveal'
 import { useTranslation } from '@/components/language-provider'
 import type { HomepageContent, ProductAdmin } from '@/lib/sanity'
-import { localizedHomepage, localizedProduct } from '@/lib/sanity'
 import { formatDualPrice } from '@/lib/pricing'
 
 const featureIcons = [Hand, Sparkles, Scissors]
@@ -20,10 +19,9 @@ export function HomePageSections({
   home: HomepageContent
   products: ProductAdmin[]
 }) {
-  const { t, locale } = useTranslation()
-  const content = localizedHomepage(home, locale)
-  const localizedProducts = products.map((product) => localizedProduct(product, locale))
-  const bestSellers = localizedProducts.filter((product) => product.bestSeller ?? product.featured)
+  const { t } = useTranslation()
+  const content = home
+  const bestSellers = products.filter((product) => product.bestSeller ?? product.featured)
 
   return (
     <>
@@ -112,7 +110,7 @@ export function HomePageSections({
           <SectionHeading eyebrow={t('nav.shop')} title={t('home.bestSellers')} />
         </Reveal>
         <div className="mx-auto mt-12 grid max-w-7xl grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
-          {(bestSellers.length ? bestSellers : localizedProducts.slice(0, 4)).map((product, index) => (
+          {(bestSellers.length ? bestSellers : products.slice(0, 4)).map((product, index) => (
             <Reveal key={product.id} delay={(index % 4) * 80}>
               <Link
                 href="/shop"

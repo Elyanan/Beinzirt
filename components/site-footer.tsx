@@ -3,13 +3,11 @@ import Link from 'next/link'
 import { Clock, Mail, MapPin, Phone } from 'lucide-react'
 import { SocialLinks } from '@/components/social-links'
 import { getMessages, translate } from '@/lib/i18n/messages'
-import { getServerLocale } from '@/lib/i18n/server'
-import { getFooterContent, localizedFooter } from '@/lib/sanity'
+import { getFooterContent } from '@/lib/sanity'
 
 export async function SiteFooter() {
-  const locale = await getServerLocale()
-  const footer = localizedFooter(await getFooterContent(), locale)
-  const t = (key: string) => translate(getMessages(locale), key)
+  const footer = await getFooterContent()
+  const t = (key: string) => translate(getMessages(), key)
 
   return (
     <footer className="relative mt-24 bg-primary text-primary-foreground">

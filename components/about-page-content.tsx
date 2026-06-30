@@ -6,13 +6,12 @@ import { SectionHeading } from '@/components/section-heading'
 import { Reveal } from '@/components/reveal'
 import { useTranslation } from '@/components/language-provider'
 import type { AboutContent } from '@/lib/sanity'
-import { localizedAbout } from '@/lib/sanity'
 
 const valueIcons = [Sparkles, Heart, Users, Palette]
 
 export function AboutPageContent({ about }: { about: AboutContent }) {
-  const { t, locale } = useTranslation()
-  const content = localizedAbout(about, locale)
+  const { t } = useTranslation()
+  const content = about
 
   return (
     <section className="px-5 py-12 lg:px-8">

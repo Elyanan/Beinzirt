@@ -11,6 +11,9 @@ export const en = {
   hero: {
     handmade: '100% Handmade',
     wovenBy: 'Woven by master artisans',
+    luxuryDetails: 'Hand-finished luxury details',
+    premiumCraft: 'Premium custom craftsmanship',
+    premiumBadge: 'Beinzirt Premium',
   },
   home: {
     seeMore: 'See More',
@@ -101,6 +104,15 @@ export const en = {
     subjectRequired: 'Subject is required',
     messageRequired: 'Message is required',
     failed: 'Failed to send your message.',
+    phoneNumber: 'Phone Number',
+    location: 'Location',
+    openHours: 'Open Hours',
+    followBeinzirt: 'Follow Beinzirt',
+    supportCopy:
+      "Whether you have a question about our collection, need styling advice, or want to discuss a custom order, we're happy to help.",
+    visitStore: 'Visit Our Store',
+    visitStoreCopy:
+      'Find us at Laphto Mall in Addis Ababa. We welcome walk-ins during opening hours.',
   },
   customOrder: {
     title: 'Custom Order',
@@ -126,6 +138,22 @@ export const en = {
     failed: 'Failed to submit custom order.',
     selectProduct: 'Select product type',
     selectOccasion: 'Select occasion (optional)',
+    fullNameRequired: 'Full name is required',
+    phoneRequired: 'Phone number is required',
+    productTypeRequired: 'Please select a product type',
+    messageRequired: 'Please describe your request',
+    successHeading: 'Request Submitted',
+    responseTime: 'Thank you for your custom order request. Our design team will contact you within 1-2 business days.',
+    uploadSample: 'Upload Sample Design',
+    uploadHint: 'Click to upload an image sample',
+    messageDescription: 'Message / Description',
+    process: 'Process',
+    yourVision: 'Your Vision',
+    contactGuidance: "Not sure what to choose? Contact us and we'll guide you.",
+    contactBeinzirt: 'Contact Beinzirt',
+    customOrdersTitle: 'Custom Orders',
+    customOrdersSubtitle:
+      "Send us your idea, sample design, or occasion details, and we'll help bring your vision to life.",
   },
   gallery: {
     title: 'Gallery',

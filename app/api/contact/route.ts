@@ -36,6 +36,10 @@ export async function POST(request: Request) {
     })
 
     if (!result.ok) {
+      console.error('Contact email failed:', {
+        to: CONTACT_EMAIL,
+        error: result.error,
+      })
       return NextResponse.json(
         { error: result.skipped ? 'Email service is not configured.' : 'Failed to send your message.' },
         { status: result.skipped ? 503 : 502 },

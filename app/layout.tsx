@@ -2,10 +2,10 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Playfair_Display, Inter, Geist_Mono } from 'next/font/google'
 import { CartProvider } from '@/components/cart-context'
+import { GoogleTranslate } from '@/components/google-translate'
 import { LanguageProvider } from '@/components/language-provider'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
-import { getServerLocale } from '@/lib/i18n/server'
 import './globals.css'
 
 const playfair = Playfair_Display({
@@ -55,15 +55,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const locale = await getServerLocale()
-
   return (
     <html
-      lang={locale === 'am' ? 'am' : 'en'}
+      lang="en"
       className={`${playfair.variable} ${inter.variable} ${geistMono.variable} bg-background`}
     >
       <body className="font-sans antialiased">
-        <LanguageProvider initialLocale={locale}>
+        <GoogleTranslate />
+        <LanguageProvider>
           <CartProvider>
             <SiteHeader />
             <main>{children}</main>

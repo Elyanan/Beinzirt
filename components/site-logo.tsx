@@ -20,7 +20,7 @@ export function SiteLogo({
   const src = inverse ? LOGO_WHITE : LOGO
 
   return (
-    <Link href="/" className={cn('group flex items-center gap-3', className)}>
+    <Link href="/" className={cn('group flex items-center gap-3 notranslate', className)}>
       <Image
         src={src}
         alt="Beinzirt Design logo"

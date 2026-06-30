@@ -113,8 +113,19 @@ export async function POST(request: Request) {
       }),
     })
 
-    if (!emailResult.ok && !emailResult.skipped) {
-      console.error('Order email failed:', emailResult.error)
+    if (!emailResult.ok) {
+      console.error('Order email failed:', {
+        orderId: generatedOrderId,
+        to: ORDERS_EMAIL,
+        error: emailResult.error,
+      })
+      return NextResponse.json(
+        {
+          error: 'Your order was saved, but email notification could not be sent. Please contact support.',
+          orderId: generatedOrderId,
+        },
+        { status: 502 },
+      )
     }
 
     return NextResponse.json({ orderId: generatedOrderId })

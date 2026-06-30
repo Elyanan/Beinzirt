@@ -3,7 +3,6 @@ import { PageBanner } from '@/components/page-banner'
 import { AboutPageContent } from '@/components/about-page-content'
 import { CtaSection } from '@/components/cta-section'
 import { getMessages, translate } from '@/lib/i18n/messages'
-import { getServerLocale } from '@/lib/i18n/server'
 import { getAboutContent } from '@/lib/sanity'
 
 export const metadata: Metadata = {
@@ -13,8 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function AboutPage() {
-  const locale = await getServerLocale()
-  const t = (key: string) => translate(getMessages(locale), key)
+  const t = (key: string) => translate(getMessages(), key)
   const about = await getAboutContent()
 
   return (

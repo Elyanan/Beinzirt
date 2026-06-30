@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "migrate:amharic": "node scripts/migrate-amharic.mjs"
+    "migrate:amharic": "node scripts/migrate-amharic.mjs",
+    "test:email": "node scripts/test-email.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -20,6 +21,7 @@
     "react": "^19",
     "react-dom": "^19",
     "recharts": "^3.9.0",
+    "resend": "^6.16.0",
     "sanity": "^6.2.0",
     "shadcn": "^4.8.0",
     "styled-components": "^6.4.3",

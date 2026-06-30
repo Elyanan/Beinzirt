@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import {
   DEFAULT_LOCALE,
   LOCALE_COOKIE,
@@ -8,10 +9,12 @@ import {
   type Locale,
 } from '@/lib/i18n/config'
 import { getMessages, translate, type Messages } from '@/lib/i18n/messages'
+import { applyGoogleTranslate } from '@/lib/google-translate'
 
 type LanguageContextValue = {
   locale: Locale
   messages: Messages
+  /** UI labels always render in English; Google Translate handles Amharic. */
   t: (key: string) => string
   setLocale: (locale: Locale) => void
 }
@@ -30,14 +33,9 @@ function persistLocale(locale: Locale) {
   document.documentElement.lang = locale === 'am' ? 'am' : 'en'
 }
 
-export function LanguageProvider({
-  children,
-  initialLocale = DEFAULT_LOCALE,
-}: {
-  children: React.ReactNode
-  initialLocale?: Locale
-}) {
-  const [locale, setLocaleState] = useState<Locale>(initialLocale)
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -45,14 +43,28 @@ export function LanguageProvider({
     setLocaleState(stored)
     persistLocale(stored)
     setReady(true)
+
+    if (stored === 'am') {
+      void applyGoogleTranslate('am')
+    }
   }, [])
 
-  const setLocale = useCallback((next: Locale) => {
-    setLocaleState(next)
-    persistLocale(next)
-  }, [])
+  useEffect(() => {
+    if (!ready || locale !== 'am') return
+    void applyGoogleTranslate('am')
+  }, [pathname, locale, ready])
 
-  const messages = useMemo(() => getMessages(locale), [locale])
+  const setLocale = useCallback(
+    (next: Locale) => {
+      if (next === locale) return
+      setLocaleState(next)
+      persistLocale(next)
+      void applyGoogleTranslate(next)
+    },
+    [locale],
+  )
+
+  const messages = useMemo(() => getMessages(), [])
   const t = useCallback((key: string) => translate(messages, key), [messages])
 
   const value = useMemo(
@@ -60,7 +72,7 @@ export function LanguageProvider({
     [locale, messages, t, setLocale],
   )
 
-  if (!ready && initialLocale === DEFAULT_LOCALE) {
+  if (!ready) {
     return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>
   }
 

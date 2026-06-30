@@ -5,7 +5,6 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from '@/components/language-provider'
 import { cn } from '@/lib/utils'
 import type { GalleryItem } from '@/lib/data'
-import { localizedGalleryItem } from '@/lib/sanity'
 import { Reveal } from '@/components/reveal'
 
 function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
@@ -43,33 +42,23 @@ function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
 }
 
 export function GalleryClient({ items, filters }: { items: GalleryItem[]; filters: string[] }) {
-  const { t, locale } = useTranslation()
+  const { t } = useTranslation()
   const [active, setActive] = useState('All')
 
-  const localizedItems = useMemo(
-    () => items.map((item) => localizedGalleryItem(item, locale)),
-    [items, locale],
-  )
-
-  const localizedFilters = useMemo(
+  const displayFilters = useMemo(
     () => filters.map((filter) => (filter === 'All' ? t('gallery.all') : filter)),
     [filters, t],
   )
 
-  const filterMap = useMemo(
-    () => Object.fromEntries(filters.map((filter, index) => [localizedFilters[index], filter])),
-    [filters, localizedFilters],
-  )
-
   const filtered =
-    active === 'All' || active === t('gallery.all')
-      ? localizedItems
-      : localizedItems.filter((item) => item.filter === filterMap[active] || item.filter === active)
+    active === 'All'
+      ? items
+      : items.filter((item) => item.filter === active)
 
   return (
     <>
       <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-2 px-5 lg:px-8">
-        {localizedFilters.map((filter, index) => {
+        {displayFilters.map((filter, index) => {
           const raw = filters[index]
           return (
             <button

@@ -24,36 +24,36 @@ if (!projectId || !dataset || !token) {
 
 const productTranslations = {
   'Menen Habesha Kemis': [
-    'መ�nen ሀበሻ ቀሚስ',
-    'በሥነ-ጥበብ የተሰራ ወርቃማ ጥeb borders ያለው በእጅ የተሰራ ጨርቃ ጨርቅ፣ ለበዓላትና ለሥነ-ጥበብ አጋጣሚዎች ፍperfect።',
+    'ምነን ሀበሻ ቀሚስ',
+    'በወርቃማ ጥለት የተሸለመ የእጅ ስራ ቀሚስ፣ ለበዓላትና ለክብረ በዓላት ተስማሚ ምርጥ ምርጫ።',
   ],
   'Zuria Ceremonial Dress': [
-    'ዙሪያ ሴረሞኒያል ፍግም',
-    'በቀይ፣ በአረንጓዴ እና በወርቅ ጥeb borders የተሞላ elegant ሴረሞኒያል ጨርቃ ጨርቅ።',
+    'ዙሪያ ሥነ ሥርዓት ቀሚስ',
+    'በቀይ፣ በአረንጓዴ እና በወርቅ የተሸለመ ውብ ባህላዊ ቀሚስ።',
   ],
   'Tibeb Celebration Dress': [
-    'ቲቤብ ተከታታይ ፍግም',
-    'ዘመናዊ ቅርፅን ከባህላዊ woven border ጋር የሚያጣመር graceful handmade dress።',
+    'ጥበብ የበዓል ቀሚስ',
+    'ዘመናዊ አቀራረብን ከባህላዊ ጥለት ጋር የሚያጣምር የእጅ ስራ ቀሚስ።',
   ],
   'Bridal Gold Border Dress': [
-    'bridal ወርቃማ border ፍግም',
-    'ለሠርግ እና ለspecial occasions luminous ወርቃማ detail ያለው statement dress።',
+    'የሙሽራ ወርቃማ ጠርዝ ቀሚስ',
+    'ለሠርግ እና ለልዩ ዝግጅቶች የተዘጋጀ በወርቃማ ዝርዝር የሚያበራ ቀሚስ።',
   ],
   'Netela Sheer Scarf': [
-    'ነጠላ sheer ሻማ',
-    'ንፁህ woven border ያለው lightweight netela፣ የባህል daily emblem።',
+    'ለስላሳ ነጠላ',
+    'ቀላል እና ውብ ጠርዝ ያለው ነጠላ፣ ለዕለታዊም ለልዩ ቀንም ተስማሚ።',
   ],
   'Golden Border Shawl': [
-    'ወርቃማ border shawl',
-    'ለspecial occasions rich ወርቃማ woven border ያለው luxurious shawl።',
+    'ወርቃማ ጠርዝ ሻል',
+    'በብሩህ ወርቃማ ጥለት የተሸለመ ለልዩ አጋጣሚዎች የተመቸ ሻል።',
   ],
   'Classic Cotton Scarf': [
-    'ክላሲክ cotton ሻማ',
-    'ለdaily wear traditional finish ያለው soft handwoven cotton።',
+    'ክላሲክ የጥጥ ሻማ',
+    'ለዕለታዊ አለባበስ የተመቸ ለስላሳ የእጅ ስራ የጥጥ ሻማ።',
   ],
   'Heritage Pattern Scarf': [
-    'heritage pattern ሻማ',
-    'modern እና traditional looks ጋር beautifully የሚጣጣሙ refined handloom patterns።',
+    'ባህላዊ ጥለት ሻማ',
+    'ከዘመናዊ እና ከባህላዊ አለባበስ ጋር የሚስማማ ውብ ጥለት ያለው ሻማ።',
   ],
 }
 
@@ -63,36 +63,47 @@ const categoryTranslations = {
 }
 
 const galleryTranslations = {
-  'Wedding Cultural Outfit': ['የሠርግ cultural outfit', 'ወርቃማ ጥeb borders ያለው hand-embroidered bridal ensemble።'],
-  'Handwoven Traditional Dress': ['handwoven traditional dress', 'delicate woven detail ያለው flowing cotton kemis።'],
-  'Beinzirt Flagship Store': ['Beinzirt flagship store', 'በአዲስ አበባ showroom ይጎቡ።'],
-  'Golden Border Netela': ['ወርቃማ border netela', 'rich woven border accents ያለው sheer scarf።'],
-  'Festival Celebration Wear': ['festival celebration wear', 'ለcultural gatherings vibrant traditional attire።'],
-  'Handwoven Scarf Detail': ['handwoven scarf detail', 'traditional tibeb edge ያለው fine cotton netela።'],
-  "Children's Celebration Wear": ['children celebration wear', 'ለlittle ones adorable handmade outfit።'],
-  'Woven Textile Close-up': ['woven textile close-up', 'decorative handloom patterns and motifs።'],
-  'Bridal Tibeb Border': ['bridal tibeb border', 'ለspecial occasions exquisite ወርቃማ embroidery።'],
+  'Wedding Cultural Outfit': ['የሠርግ ባህላዊ ልብስ', 'በወርቃማ ጥለት የተሸለመ የሙሽራ አለባበስ።'],
+  'Handwoven Traditional Dress': ['በእጅ የተሰራ ባህላዊ ቀሚስ', 'ለስላሳ ጥለት ያለው የጥጥ ቀሚስ።'],
+  'Beinzirt Flagship Store': ['የበይንዝርት ዋና መደብር', 'በአዲስ አበባ ያለውን ዋና መደብራችን ይጎብኙ።'],
+  'Golden Border Netela': ['ወርቃማ ጠርዝ ነጠላ', 'በውብ ወርቃማ ጥለት የተሰራ ነጠላ።'],
+  'Festival Celebration Wear': ['የበዓል ባህላዊ አለባበስ', 'ለባህላዊ ስብሰባዎች ተስማሚ ውብ አለባበስ።'],
+  'Handwoven Scarf Detail': ['የበእጅ ሻማ ዝርዝር', 'በባህላዊ ጥለት የተሸለመ ነጠላ ዝርዝር።'],
+  "Children's Celebration Wear": ['የህጻናት የበዓል አለባበስ', 'ለህጻናት በእጅ የተሰራ ውብ አለባበስ።'],
+  'Woven Textile Close-up': ['የተጠለፈ ጨርቅ ቅርብ ምስል', 'የእጅ ጥልፍ ጥለቶችን በቅርብ የሚያሳይ ምስል።'],
+  'Bridal Tibeb Border': ['የሙሽራ ጥበብ ጠርዝ', 'ለልዩ አጋጣሚዎች የተሰራ የሙሽራ ጠርዝ ዝርዝር።'],
 }
 
 const storyParagraphsAm = [
-  'Selam፣ visionary designer፣ በEthiopian culture rich tapestry ተነሳሽተች። በtraditional textiles beauty እና new life potential አየች።',
-  'Beinzirt journey በskilled artisans small workshop ይጀመረ። Cottonን stunning garments ይለውጣሉ።',
+  'ሰላም በኢትዮጵያ ባህል ውበት ተነሳሽታ በእጅ የተሰሩ ጨርቆችን በዘመናዊ አቀራረብ ለማቅረብ ጉዞዋን ጀመረች።',
+  'በይንዝርት ከባለሙያ አርቲዛኖች ጋር በመስራት ባህላዊ ጥበብን ወደ ዘመናዊ እና ክቡር የአለባበስ ንድፎች ይቀይራል።',
 ]
 
 const homepageAm = {
   heroAm: {
     eyebrow: 'በአዲስ አበባ በእጅ የተሰራ',
-    heading: 'Handcrafted Heritage, በኩራት የሚለበስ!',
-    subtitle: 'በአዲስ አበባ በእጅ የተሰሩ የኢትዮጵያ textiles፣ garments እና cultural designs ዘለቄታዊ beauty ይሞክሩ።',
-    buttonText: 'مجموعه ይመልከቱ',
+    heading: 'የእጅ ጥበብ ቅርስ፣ በኩራት የሚለበስ!',
+    subtitle: 'በአዲስ አበባ በፍቅር የተሰሩ የኢትዮጵያ ጨርቆችና ባህላዊ ዲዛይኖችን ያግኙ።',
+    buttonText: 'ስብስቡን ይመልከቱ',
     secondaryButtonText: 'ብጁ ትዕዛዝ',
   },
   heritageEyebrowAm: 'ልዩ ባህላችን',
-  heritageTitleAm: 'የኢትዮጵያ Textiles Rich Variety',
-  heritageTextAm: 'በexquisite Ethiopian cloths ጀርባ captivating stories ያግኙ። እያንዳንዱ piece craftsmanship story እና artistry legacy ይዟል።',
+  heritageTitleAm: 'የኢትዮጵያ ጨርቃ ጨርቅ ባለጠግነትን ያስሱ',
+  heritageTextAm: 'እያንዳንዱ ቁራጭ የእጅ ጥበብ ታሪክን ይሸከማል፤ የአርቲዛኖቻችንን ባህላዊ ቅርስ ያሳያል።',
   storyEyebrowAm: 'ታሪካችን',
   storyTitleAm: 'እኛ ማን ነን',
   storyParagraphsAm,
+}
+
+function fallbackAmharicName(value, fallback) {
+  const normalized = String(value ?? '').trim()
+  return normalized || fallback
+}
+
+function fallbackAmharicDescription(value, fallback) {
+  const normalized = String(value ?? '').trim()
+  if (!normalized) return fallback
+  return `${fallback} (${normalized.length > 60 ? normalized.slice(0, 60) + '...' : normalized})`
 }
 
 async function mutate(mutations) {
@@ -125,23 +136,34 @@ const mutations = []
 
 for (const product of await fetchDocs('product', 'name, description')) {
   const translation = productTranslations[product.name]
-  if (!translation) continue
+  const nameAm = translation?.[0] ?? fallbackAmharicName('', 'የበይንዝርት የእጅ ስራ ምርት')
+  const descriptionAm =
+    translation?.[1] ??
+    fallbackAmharicDescription(
+      product.description,
+      'የኢትዮጵያ ባህላዊ ጥበብን የሚያንጸባርቅ ፕሪሚየም የእጅ ስራ ምርት።',
+    )
   mutations.push({
-    patch: { id: product._id, set: { nameAm: translation[0], descriptionAm: translation[1] } },
+    patch: { id: product._id, set: { nameAm, descriptionAm } },
   })
 }
 
 for (const category of await fetchDocs('category', 'title')) {
-  const titleAm = categoryTranslations[category.title]
-  if (!titleAm) continue
+  const titleAm = categoryTranslations[category.title] ?? 'ስብስብ'
   mutations.push({ patch: { id: category._id, set: { titleAm } } })
 }
 
 for (const item of await fetchDocs('galleryItem', 'title, caption')) {
   const translation = galleryTranslations[item.title]
-  if (!translation) continue
+  const titleAm = translation?.[0] ?? fallbackAmharicName('', 'የበይንዝርት ጋለሪ ምስል')
+  const captionAm =
+    translation?.[1] ??
+    fallbackAmharicDescription(
+      item.caption,
+      'የበይንዝርት እጅ ስራ እና ባህላዊ ውበትን የሚያሳይ ምስል።',
+    )
   mutations.push({
-    patch: { id: item._id, set: { titleAm: translation[0], captionAm: translation[1] } },
+    patch: { id: item._id, set: { titleAm, captionAm } },
   })
 }
 
@@ -150,8 +172,8 @@ mutations.push({
   patch: {
     id: 'aboutPage',
     set: {
-      missionAm: 'Ethiopian heritageን በhandmade fashion እና home textiles celebrate ማድረግ፣ ለcustomers እና artisans lasting value መፍጠር።',
-      visionAm: 'በculture፣ quality እና women-led artistry rooted globally recognized Ethiopian luxury craft house መሆን።',
+      missionAm: 'የኢትዮጵያ ባህላዊ ቅርስን በእጅ የተሰራ ፋሽን እና የቤት ጨርቃ ጨርቅ በኩል ማክበር፣ ለደንበኞችና ለአርቲዛኖች ዘላቂ ዋጋ መፍጠር።',
+      visionAm: 'በባህል፣ በጥራት እና በሴቶች የሚመራ እጅ ጥበብ ላይ የተመሰረተ ዓለም አቀፍ የኢትዮጵያ ፕሪሚየም ብራንድ መሆን።',
       storyParagraphsAm,
     },
   },
@@ -160,8 +182,8 @@ mutations.push({
   patch: {
     id: 'footer',
     set: {
-      descriptionAm: 'በአዲስ አበባ በኩራት የተሰሩ handmade Ethiopian traditional clothing እና textiles።',
-      copyrightAm: 'Copyright © 2026 Beinzirt Design. All rights reserved.',
+      descriptionAm: 'በአዲስ አበባ በኩራት የተሰሩ የኢትዮጵያ ባህላዊ አለባበሶች እና ጨርቃ ጨርቆች።',
+      copyrightAm: 'የቅጂ መብት © 2026 በይንዝርት ዲዛይን። መብቶች በሙሉ የተጠበቁ ናቸው።',
     },
   },
 })

@@ -92,8 +92,20 @@ export async function POST(request: Request) {
       html: customOrderEmailHtml(customOrder),
     })
 
-    if (!emailResult.ok && !emailResult.skipped) {
-      console.error('Custom order email failed:', emailResult.error)
+    if (!emailResult.ok) {
+      console.error('Custom order email failed:', {
+        requestId: generatedRequestId,
+        to: ORDERS_EMAIL,
+        error: emailResult.error,
+      })
+      return NextResponse.json(
+        {
+          error:
+            'Your custom request was saved, but email notification could not be sent. Please contact support.',
+          requestId: generatedRequestId,
+        },
+        { status: 502 },
+      )
     }
 
     return NextResponse.json({ requestId: generatedRequestId })

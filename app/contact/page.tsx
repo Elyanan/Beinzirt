@@ -7,7 +7,6 @@ import { Reveal } from '@/components/reveal'
 import { SocialLinks } from '@/components/social-links'
 import { getContactContent } from '@/lib/sanity'
 import { getMessages, translate } from '@/lib/i18n/messages'
-import { getServerLocale } from '@/lib/i18n/server'
 
 export const metadata: Metadata = {
   title: 'Contact | Beinzirt Design',
@@ -16,14 +15,13 @@ export const metadata: Metadata = {
 }
 
 export default async function ContactPage() {
-  const locale = await getServerLocale()
-  const t = (key: string) => translate(getMessages(locale), key)
+  const t = (key: string) => translate(getMessages(), key)
   const contact = await getContactContent()
   const infoCards = [
-    { icon: Phone, label: 'Phone Number', value: contact.phone, href: undefined },
-    { icon: Mail, label: 'Email', value: contact.email, href: `mailto:${contact.email}` },
-    { icon: MapPin, label: 'Location', value: contact.address, href: undefined },
-    { icon: Clock, label: 'Open Hours', value: contact.hours, href: undefined },
+    { icon: Phone, label: t('contact.phoneNumber'), value: contact.phone, href: undefined },
+    { icon: Mail, label: t('contact.email'), value: contact.email, href: `mailto:${contact.email}` },
+    { icon: MapPin, label: t('contact.location'), value: contact.address, href: undefined },
+    { icon: Clock, label: t('contact.openHours'), value: contact.hours, href: undefined },
   ]
 
   return (
@@ -58,7 +56,7 @@ export default async function ContactPage() {
         <Reveal delay={180} className="mx-auto mt-8 max-w-6xl">
           <div className="rounded-2xl border border-border/70 bg-card p-5 shadow-luxury">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
-              Follow Beinzirt
+              {t('contact.followBeinzirt')}
             </p>
             <SocialLinks links={contact.socialLinks} className="mt-4" />
           </div>
@@ -70,18 +68,16 @@ export default async function ContactPage() {
           <Reveal>
             <h2 className="font-serif text-3xl text-foreground">{t('contact.sendMessage')}</h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              Whether you have a question about our collection, need styling advice,
-              or want to discuss a custom order, we&apos;re happy to help.
+              {t('contact.supportCopy')}
             </p>
             <div className="mt-8">
               <ContactForm />
             </div>
           </Reveal>
           <Reveal delay={120}>
-            <h2 className="font-serif text-3xl text-foreground">Visit Our Store</h2>
+            <h2 className="font-serif text-3xl text-foreground">{t('contact.visitStore')}</h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              Find us at Laphto Mall in Addis Ababa. We welcome walk-ins during
-              opening hours.
+              {t('contact.visitStoreCopy')}
             </p>
             <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-2xl border border-border/70 shadow-luxury">
               <Image

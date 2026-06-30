@@ -5,7 +5,6 @@ import { Search } from 'lucide-react'
 import { ProductCard } from '@/components/product-card'
 import { useTranslation } from '@/components/language-provider'
 import type { ProductAdmin, CmsCategory } from '@/lib/sanity'
-import { localizedCategory, localizedProduct } from '@/lib/sanity'
 import { cn } from '@/lib/utils'
 
 const sortOptions = [
@@ -22,23 +21,13 @@ export function ShopClient({
   products: ProductAdmin[]
   categories: CmsCategory[]
 }) {
-  const { t, locale } = useTranslation()
+  const { t } = useTranslation()
   const [active, setActive] = useState<string>('All')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<string>('best-seller')
 
-  const localizedProducts = useMemo(
-    () => products.map((product) => localizedProduct(product, locale)),
-    [products, locale],
-  )
-
-  const localizedCategories = useMemo(
-    () => categories.map((category) => localizedCategory(category, locale)),
-    [categories, locale],
-  )
-
   const filtered = useMemo(() => {
-    let list = localizedProducts.filter((product) => {
+    let list = products.filter((product) => {
       const matchCat = active === 'All' || product.category === active
       const matchQuery =
         product.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -61,14 +50,14 @@ export function ShopClient({
     if (sort === 'az') list = [...list].sort((a, b) => a.name.localeCompare(b.name))
     if (sort === 'za') list = [...list].sort((a, b) => b.name.localeCompare(a.name))
     return list
-  }, [active, localizedProducts, query, sort])
+  }, [active, products, query, sort])
 
   const categoryFilters = useMemo(
     () => [
       { value: 'All', label: t('shop.all') },
-      ...localizedCategories.map((category) => ({ value: category.title, label: category.title })),
+      ...categories.map((category) => ({ value: category.title, label: category.title })),
     ],
-    [localizedCategories, t],
+    [categories, t],
   )
 
   return (

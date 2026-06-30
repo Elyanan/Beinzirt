@@ -1,13 +1,10 @@
-import { am } from '@/lib/i18n/messages/am'
 import { en, type Messages } from '@/lib/i18n/messages/en'
-import type { Locale } from '@/lib/i18n/config'
-
-export const messages: Record<Locale, Messages> = { en, am }
 
 export type { Messages }
 
-export function getMessages(locale: Locale): Messages {
-  return messages[locale] ?? messages.en
+/** English UI strings only — Amharic is handled by Google Translate in the browser. */
+export function getMessages(): Messages {
+  return en
 }
 
 type NestedKeyOf<T, Prefix extends string = ''> = T extends string

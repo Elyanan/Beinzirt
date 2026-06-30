@@ -109,7 +109,7 @@ export function ContactForm() {
             id="contact-name"
             value={form.name}
             onChange={(e) => handleChange('name', e.target.value)}
-            placeholder="Your full name"
+            placeholder={t('contact.fullName')}
             aria-invalid={!!errors.name}
           />
           {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
@@ -121,7 +121,7 @@ export function ContactForm() {
             type="email"
             value={form.email}
             onChange={(e) => handleChange('email', e.target.value)}
-            placeholder="you@example.com"
+            placeholder={t('contact.email')}
             aria-invalid={!!errors.email}
           />
           {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
@@ -135,7 +135,7 @@ export function ContactForm() {
             type="tel"
             value={form.phone}
             onChange={(e) => handleChange('phone', e.target.value)}
-            placeholder="+251 ..."
+            placeholder={t('contact.phone')}
           />
         </div>
         <div className="space-y-2">
@@ -144,7 +144,7 @@ export function ContactForm() {
             id="contact-subject"
             value={form.subject}
             onChange={(e) => handleChange('subject', e.target.value)}
-            placeholder="How can we help?"
+            placeholder={t('contact.subject')}
             aria-invalid={!!errors.subject}
           />
           {errors.subject && <p className="text-xs text-destructive">{errors.subject}</p>}
@@ -156,7 +156,7 @@ export function ContactForm() {
           id="contact-message"
           value={form.message}
           onChange={(e) => handleChange('message', e.target.value)}
-          placeholder="Tell us about your inquiry..."
+          placeholder={t('contact.message')}
           aria-invalid={!!errors.message}
         />
         {errors.message && <p className="text-xs text-destructive">{errors.message}</p>}

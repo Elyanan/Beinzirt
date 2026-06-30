@@ -94,7 +94,7 @@ export function CartClient() {
         }),
       })
       const payload = await response.json()
-      if (!response.ok) throw new Error(payload.error || 'Failed to place order.')
+      if (!response.ok) throw new Error(payload.error || t('cart.failed'))
       clear()
       setSuccessOrderId(payload.orderId)
       setForm(initialForm)
@@ -194,7 +194,7 @@ export function CartClient() {
                   <div className="flex items-center rounded-full border border-border">
                     <button
                       type="button"
-                      aria-label="Decrease quantity"
+                      aria-label={t('product.decreaseQty')}
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary"
                     >
@@ -203,7 +203,7 @@ export function CartClient() {
                     <span className="w-10 text-center text-sm font-medium">{item.quantity}</span>
                     <button
                       type="button"
-                      aria-label="Increase quantity"
+                      aria-label={t('product.increaseQty')}
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       disabled={item.availability === false}
                       className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary disabled:cursor-not-allowed disabled:text-muted-foreground/50"
@@ -260,13 +260,13 @@ export function CartClient() {
               <dd className="text-right font-serif text-xl text-primary">
                 {formatBirr(totalBirr)}
                 <span className="block text-xs font-sans text-muted-foreground">
-                  {formatUsd(totalUsd)} before local delivery conversion
+                  {formatUsd(totalUsd)}
                 </span>
               </dd>
             </div>
           </dl>
           <p className="mt-4 rounded-lg bg-secondary/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
-            Delivery is {formatBirr(300)} and becomes free when your cart is over {formatBirr(7000)}.
+            {t('cart.deliveryNote')}
           </p>
         </section>
 

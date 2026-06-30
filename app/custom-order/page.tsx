@@ -8,6 +8,7 @@ import { Reveal } from '@/components/reveal'
 import { Button } from '@/components/ui/button'
 import { customOrderSteps } from '@/lib/data'
 import { pageImages } from '@/lib/images'
+import { getMessages, translate } from '@/lib/i18n/messages'
 
 export const metadata: Metadata = {
   title: 'Custom Order | Beinzirt Design',
@@ -15,18 +16,20 @@ export const metadata: Metadata = {
     'Request a custom handmade Ethiopian garment or home textile from Beinzirt Design. Share your design idea and we will bring it to life.',
 }
 
-export default function CustomOrderPage() {
+export default async function CustomOrderPage() {
+  const t = (key: string) => translate(getMessages(), key)
+
   return (
     <>
       <PageBanner
-        title="Custom Orders"
-        subtitle="Send us your idea, sample design, or occasion details, and we'll help bring your vision to life."
+        title={t('customOrder.customOrdersTitle')}
+        subtitle={t('customOrder.customOrdersSubtitle')}
         image={pageImages.customOrderBanner}
       />
 
       <section className="px-5 py-16 lg:px-8">
         <Reveal>
-          <SectionHeading eyebrow="Process" title="How It Works" />
+          <SectionHeading eyebrow={t('customOrder.process')} title={t('customOrder.howItWorks')} />
         </Reveal>
         <div className="mx-auto mt-12 grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {customOrderSteps.map((step, i) => (
@@ -48,9 +51,9 @@ export default function CustomOrderPage() {
           <Reveal>
             <SectionHeading
               align="center"
-              eyebrow="Your Vision"
-              title="Custom Order Form"
-              subtitle="Fill in the details below and our team will get in touch to discuss your piece."
+              eyebrow={t('customOrder.yourVision')}
+              title={t('customOrder.requestForm')}
+              subtitle={t('customOrder.subtitle')}
             />
           </Reveal>
           <Reveal delay={120} className="mt-10">
@@ -64,7 +67,7 @@ export default function CustomOrderPage() {
       <section className="px-5 py-16 lg:px-8">
         <Reveal className="mx-auto max-w-2xl text-center">
           <p className="font-serif text-xl text-foreground">
-            Not sure what to choose? Contact us and we&apos;ll guide you.
+            {t('customOrder.contactGuidance')}
           </p>
           <Button
             asChild
@@ -73,7 +76,7 @@ export default function CustomOrderPage() {
             className="mt-6 rounded-full border-foreground/20 px-7 hover:bg-foreground/5"
           >
             <Link href="/contact">
-              Contact Beinzirt
+              {t('customOrder.contactBeinzirt')}
               <ArrowRight className="size-4" />
             </Link>
           </Button>
