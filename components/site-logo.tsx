@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { LOGO } from '@/lib/images'
+import { LOGO, LOGO_WHITE } from '@/lib/images'
 
 type SiteLogoProps = {
   variant?: 'default' | 'inverse'
@@ -17,17 +17,18 @@ export function SiteLogo({
   size = 'nav',
 }: SiteLogoProps) {
   const inverse = variant === 'inverse'
+  const src = inverse ? LOGO_WHITE : LOGO
 
   return (
     <Link href="/" className={cn('group flex items-center gap-3', className)}>
       <Image
-        src={LOGO}
+        src={src}
         alt="Beinzirt Design logo"
         width={180}
         height={100}
         className={cn(
           'shrink-0 object-contain transition-opacity group-hover:opacity-90',
-          size === 'footer' ? 'h-24 w-auto sm:h-28' : 'h-14 w-auto sm:h-16',
+          size === 'footer' ? 'h-28 w-auto sm:h-32' : 'h-16 w-auto sm:h-20',
         )}
         priority
       />

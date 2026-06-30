@@ -8,7 +8,7 @@ import type { CmsCategory } from '@/lib/sanity'
 import { cn } from '@/lib/utils'
 
 const sortOptions = [
-  { value: 'featured', label: 'Featured' },
+  { value: 'best-seller', label: 'Best Sellers' },
   { value: 'newest', label: 'Newest' },
   { value: 'az', label: 'A-Z' },
   { value: 'za', label: 'Z-A' },
@@ -23,7 +23,7 @@ export function ShopClient({
 }) {
   const [active, setActive] = useState<string>('All')
   const [query, setQuery] = useState('')
-  const [sort, setSort] = useState<string>('featured')
+  const [sort, setSort] = useState<string>('best-seller')
 
   const filtered = useMemo(() => {
     let list = products.filter((p) => {
@@ -34,8 +34,10 @@ export function ShopClient({
       return matchCat && matchQuery
     })
 
-    if (sort === 'featured') {
-      list = [...list].sort((a, b) => Number(b.featured) - Number(a.featured))
+    if (sort === 'best-seller') {
+      list = [...list].sort(
+        (a, b) => Number(b.bestSeller ?? b.featured) - Number(a.bestSeller ?? a.featured),
+      )
     }
     if (sort === 'newest') {
       list = [...list].sort(

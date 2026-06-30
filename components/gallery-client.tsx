@@ -3,8 +3,7 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import type { GalleryFilter, GalleryItem } from '@/lib/data'
-import { galleryFilters } from '@/lib/data'
+import type { GalleryItem } from '@/lib/data'
 import { Reveal } from '@/components/reveal'
 
 function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
@@ -41,8 +40,8 @@ function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
   )
 }
 
-export function GalleryClient({ items }: { items: GalleryItem[] }) {
-  const [active, setActive] = useState<GalleryFilter>('All')
+export function GalleryClient({ items, filters }: { items: GalleryItem[]; filters: string[] }) {
+  const [active, setActive] = useState('All')
 
   const filtered =
     active === 'All'
@@ -52,7 +51,7 @@ export function GalleryClient({ items }: { items: GalleryItem[] }) {
   return (
     <>
       <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-2 px-5 lg:px-8">
-        {galleryFilters.map((filter) => (
+        {filters.map((filter) => (
           <button
             key={filter}
             type="button"

@@ -4,6 +4,7 @@ import {
   aboutValues,
   categories as fallbackCategoryNames,
   contactInfo,
+  galleryFilters as fallbackGalleryFilters,
   galleryItems as fallbackGalleryItems,
   homeCategories,
   products as fallbackProducts,
@@ -12,7 +13,7 @@ import {
   type GalleryItem,
   type Product,
 } from '@/lib/data'
-import { IMAGE_FALLBACK, LOGO, pageImages } from '@/lib/images'
+import { IMAGE_FALLBACK, LOGO_WHITE, pageImages } from '@/lib/images'
 
 const apiVersion = 'v2025-02-19'
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
@@ -110,12 +111,16 @@ export type OrderLineItem = {
   name: string
   category: string
   quantity: number
-  price: number
-  subtotal: number
+  price?: number
+  subtotal?: number
+  priceBirr: number
+  priceUsd: number
+  subtotalBirr: number
+  subtotalUsd: number
   image?: string
 }
 
-export type OrderStatus = 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled'
+export type OrderStatus = 'Pending' | 'Confirmed' | 'Delivered'
 
 export type CustomerOrder = {
   id: string
@@ -126,9 +131,32 @@ export type CustomerOrder = {
   address: string
   notes?: string
   items: OrderLineItem[]
+  subtotalBirr: number
+  subtotalUsd: number
+  deliveryFeeBirr: number
+  totalBirr: number
+  totalUsd: number
   total: number
   timestamp: string
   status: OrderStatus
+}
+
+export type CustomOrderStatus = 'Pending' | 'Confirmed' | 'Delivered'
+
+export type CustomOrder = {
+  id: string
+  requestId: string
+  name: string
+  phone: string
+  email: string
+  productType: string
+  occasion?: string
+  colors?: string
+  size?: string
+  deadline?: string
+  message: string
+  timestamp: string
+  status: CustomOrderStatus
 }
 
 export type DashboardStats = {
@@ -137,8 +165,12 @@ export type DashboardStats = {
   galleryImages: number
   websiteImages: number
   totalOrders: number
-  recentOrders: CustomerOrder[]
-  recentProducts: ProductAdmin[]
+  totalCustomOrders: number
+  orderRevenueBirr: number
+  orderRevenueUsd: number
+  monthlyRevenue: { label: string; totalBirr: number; totalUsd: number }[]
+  yearlyRevenue: { label: string; totalBirr: number; totalUsd: number }[]
+  statusCounts: { status: OrderStatus; count: number }[]
 }
 
 export function isSanityConfigured() {
@@ -287,6 +319,23 @@ function fallbackCategories() {
   )
 }
 
+function fallbackGalleryCategories() {
+  return fallbackGalleryFilters
+    .filter((title) => title !== 'All')
+    .map((title, index) =>
+      normalizeCategory(
+        {
+          _id: `galleryCategory.${slugify(title)}`,
+          title,
+          slug: { current: slugify(title) },
+          sortOrder: index + 1,
+          hidden: false,
+        },
+        index,
+      ),
+    )
+}
+
 function normalizeImage(item: any): CmsImage | null {
   const url = item?.url ?? item?.asset?.url ?? item?.image ?? item
   if (!url || typeof url !== 'string') return null
@@ -303,13 +352,19 @@ function normalizeProduct(item: any): ProductAdmin {
     : []
   const mainImage = item?.image ?? item?.featuredImageUrl ?? images[0]?.url ?? IMAGE_FALLBACK
   const category = item?.category ?? item?.categoryTitle ?? item?.categoryName ?? ''
+  const legacyPrice = Number(item?.price ?? 0)
+  const priceUsd = Number(item?.priceUsd ?? item?.usdPrice ?? legacyPrice)
+  const priceBirr = Number(item?.priceBirr ?? item?.birrPrice ?? item?.priceEtb ?? legacyPrice * 140)
+  const bestSeller = Boolean(item?.bestSeller ?? item?.featured)
 
   return {
     id: item?._id ?? item?.id ?? slugify(item?.name ?? 'product'),
     slug: item?.slug?.current ?? item?.slug ?? slugify(item?.name ?? 'product'),
     name: item?.name ?? 'Untitled product',
     category,
-    price: Number(item?.price ?? 0),
+    price: priceUsd,
+    priceBirr,
+    priceUsd,
     image: mainImage,
     imageAlt: item?.imageAlt ?? item?.featuredImageAlt ?? item?.name ?? 'Product image',
     imageRef: item?.featuredImageRef,
@@ -317,7 +372,8 @@ function normalizeProduct(item: any): ProductAdmin {
     galleryImages: images,
     description: item?.description ?? '',
     availability: item?.availability !== false,
-    featured: Boolean(item?.featured),
+    bestSeller,
+    featured: bestSeller,
     sortOrder: Number(item?.sortOrder ?? 999),
     createdAt: item?._createdAt ?? item?.createdAt,
     updatedAt: item?._updatedAt ?? item?.updatedAt,
@@ -340,6 +396,38 @@ function normalizeGalleryItem(item: any, index = 0): GalleryItem {
 }
 
 function normalizeOrder(item: any): CustomerOrder {
+  const items = Array.isArray(item?.items)
+    ? item.items.map((line: any) => {
+        const quantity = Math.max(1, Number(line?.quantity ?? 1))
+        const priceUsd = Number(line?.priceUsd ?? line?.price ?? 0)
+        const priceBirr = Number(line?.priceBirr ?? line?.price ?? 0)
+        return {
+          productId: line?.productId ?? '',
+          name: line?.name ?? '',
+          category: line?.category ?? '',
+          quantity,
+          price: priceUsd,
+          subtotal: Number(line?.subtotal ?? priceUsd * quantity),
+          priceBirr,
+          priceUsd,
+          subtotalBirr: Number(line?.subtotalBirr ?? priceBirr * quantity),
+          subtotalUsd: Number(line?.subtotalUsd ?? line?.subtotal ?? priceUsd * quantity),
+          image: line?.image ?? '',
+        } satisfies OrderLineItem
+      })
+    : []
+  const subtotalBirr = Number(
+    item?.subtotalBirr ?? items.reduce((sum: number, line: OrderLineItem) => sum + line.subtotalBirr, 0),
+  )
+  const subtotalUsd = Number(
+    item?.subtotalUsd ?? items.reduce((sum: number, line: OrderLineItem) => sum + line.subtotalUsd, 0),
+  )
+  const deliveryFeeBirr = Number(item?.deliveryFeeBirr ?? 0)
+  const totalBirr = Number(item?.totalBirr ?? item?.total ?? subtotalBirr + deliveryFeeBirr)
+  const totalUsd = Number(item?.totalUsd ?? item?.total ?? subtotalUsd)
+  const rawStatus = item?.status ?? 'Pending'
+  const status = rawStatus === 'Completed' ? 'Delivered' : rawStatus === 'Cancelled' ? 'Pending' : rawStatus
+
   return {
     id: item?._id ?? item?.id ?? '',
     orderId: item?.orderId ?? item?._id ?? '',
@@ -348,10 +436,35 @@ function normalizeOrder(item: any): CustomerOrder {
     email: item?.email ?? '',
     address: item?.address ?? '',
     notes: item?.notes ?? '',
-    items: Array.isArray(item?.items) ? item.items : [],
-    total: Number(item?.total ?? 0),
+    items,
+    subtotalBirr,
+    subtotalUsd,
+    deliveryFeeBirr,
+    totalBirr,
+    totalUsd,
+    total: totalBirr,
     timestamp: item?.timestamp ?? item?._createdAt ?? new Date().toISOString(),
-    status: (item?.status ?? 'Pending') as OrderStatus,
+    status: status as OrderStatus,
+  }
+}
+
+function normalizeCustomOrder(item: any): CustomOrder {
+  const rawStatus = item?.status ?? 'Pending'
+  const status = rawStatus === 'Completed' ? 'Delivered' : rawStatus === 'Cancelled' ? 'Pending' : rawStatus
+  return {
+    id: item?._id ?? item?.id ?? '',
+    requestId: item?.requestId ?? item?._id ?? '',
+    name: item?.name ?? '',
+    phone: item?.phone ?? '',
+    email: item?.email ?? '',
+    productType: item?.productType ?? '',
+    occasion: item?.occasion ?? '',
+    colors: item?.colors ?? '',
+    size: item?.size ?? '',
+    deadline: item?.deadline ?? '',
+    message: item?.message ?? '',
+    timestamp: item?.timestamp ?? item?._createdAt ?? new Date().toISOString(),
+    status: status as CustomOrderStatus,
   }
 }
 
@@ -382,9 +495,18 @@ export async function getCategories(options?: { includeHidden?: boolean }) {
   return options?.includeHidden ? categories : categories.filter((item) => !item.hidden)
 }
 
+export async function getGalleryCategories(options?: { includeHidden?: boolean }) {
+  const query = `*[_type == "galleryCategory"] | order(sortOrder asc, title asc) {
+    _id, title, slug, sortOrder, hidden, _createdAt, _updatedAt
+  }`
+  const docs = await sanityQuery<any[]>(query, undefined, { cache: 'no-store' })
+  const categories = docs?.length ? docs.map(normalizeCategory) : fallbackGalleryCategories()
+  return options?.includeHidden ? categories : categories.filter((item) => !item.hidden)
+}
+
 export async function getStorefrontProducts() {
   const query = `*[_type == "product" && availability != false && coalesce(category->title, categoryName) in ["Dresses", "Scarves"]] | order(sortOrder asc, _createdAt desc) {
-    _id, name, slug, description, price, availability, featured, sortOrder, _createdAt, _updatedAt,
+    _id, name, slug, description, price, priceBirr, priceUsd, availability, featured, bestSeller, sortOrder, _createdAt, _updatedAt,
     "category": coalesce(category->title, categoryName),
     "image": featuredImage.asset->url,
     "imageAlt": featuredImage.alt,
@@ -401,7 +523,7 @@ export async function getStorefrontProducts() {
 
 export async function getAdminProducts() {
   const query = `*[_type == "product"] | order(sortOrder asc, _createdAt desc) {
-    _id, name, slug, description, price, availability, featured, sortOrder, _createdAt, _updatedAt,
+    _id, name, slug, description, price, priceBirr, priceUsd, availability, featured, bestSeller, sortOrder, _createdAt, _updatedAt,
     "category": coalesce(category->title, categoryName),
     "image": featuredImage.asset->url,
     "imageAlt": featuredImage.alt,
@@ -414,7 +536,7 @@ export async function getAdminProducts() {
 
 export async function getProductById(id: string) {
   const query = `*[_type == "product" && _id == $id][0] {
-    _id, name, slug, description, price, availability, featured, sortOrder, _createdAt, _updatedAt,
+    _id, name, slug, description, price, priceBirr, priceUsd, availability, featured, bestSeller, sortOrder, _createdAt, _updatedAt,
     "category": coalesce(category->title, categoryName),
     "image": featuredImage.asset->url,
     "imageAlt": featuredImage.alt,
@@ -570,7 +692,7 @@ export async function getContactContent(): Promise<ContactContent> {
 }
 
 export const fallbackFooter: FooterContent = {
-  logo: LOGO,
+  logo: LOGO_WHITE,
   description: 'Handmade Ethiopian traditional clothing and textiles crafted with pride in Addis Ababa.',
   copyright: 'Copyright © 2026 Beinzirt Design. All rights reserved.',
   links: [
@@ -609,10 +731,18 @@ export async function getFooterContent(): Promise<FooterContent> {
 
 export async function getOrders() {
   const query = `*[_type == "order"] | order(timestamp desc) {
-    _id, orderId, customerName, phone, email, address, notes, items, total, timestamp, status
+    _id, orderId, customerName, phone, email, address, notes, items, subtotalBirr, subtotalUsd, deliveryFeeBirr, totalBirr, totalUsd, total, timestamp, status
   }`
   const docs = await sanityQuery<any[]>(query, undefined, { cache: 'no-store' })
   return docs?.map(normalizeOrder) ?? []
+}
+
+export async function getCustomOrders() {
+  const query = `*[_type == "customOrder"] | order(timestamp desc) {
+    _id, requestId, name, phone, email, productType, occasion, colors, size, deadline, message, timestamp, status
+  }`
+  const docs = await sanityQuery<any[]>(query, undefined, { cache: 'no-store' })
+  return docs?.map(normalizeCustomOrder) ?? []
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -622,27 +752,33 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     "galleryImages": count(*[_type == "galleryItem"]),
     "websiteImages": count(*[_type == "websiteImage"]),
     "totalOrders": count(*[_type == "order"]),
-    "recentOrders": *[_type == "order"] | order(timestamp desc)[0...5] {
-      _id, orderId, customerName, phone, email, address, notes, items, total, timestamp, status
-    },
-    "recentProducts": *[_type == "product"] | order(_createdAt desc)[0...5] {
-      _id, name, slug, description, price, availability, featured, sortOrder, _createdAt, _updatedAt,
-      "category": coalesce(category->title, categoryName),
-      "image": featuredImage.asset->url
+    "totalCustomOrders": count(*[_type == "customOrder"]),
+    "orders": *[_type == "order"] | order(timestamp desc)[0...200] {
+      _id, orderId, customerName, phone, email, address, notes, items, subtotalBirr, subtotalUsd, deliveryFeeBirr, totalBirr, totalUsd, total, timestamp, status
     }
   }`
   const doc = await sanityQuery<any>(query, undefined, { cache: 'no-store' })
   if (!doc) {
+    const fallbackStatusCounts: DashboardStats['statusCounts'] = [
+      { status: 'Pending', count: 0 },
+      { status: 'Confirmed', count: 0 },
+      { status: 'Delivered', count: 0 },
+    ]
     return {
       totalProducts: fallbackProducts.length,
       totalCategories: fallbackCategoryNames.length,
       galleryImages: fallbackGalleryItems.length,
       websiteImages: 8,
       totalOrders: 0,
-      recentOrders: [],
-      recentProducts: fallbackProducts.slice(0, 5).map(normalizeProduct),
+      totalCustomOrders: 0,
+      orderRevenueBirr: 0,
+      orderRevenueUsd: 0,
+      monthlyRevenue: buildMonthlyRevenue([]),
+      yearlyRevenue: buildYearlyRevenue([]),
+      statusCounts: fallbackStatusCounts,
     }
   }
+  const orders = (doc.orders ?? []).map(normalizeOrder)
 
   return {
     totalProducts: Number(doc.totalProducts ?? 0),
@@ -650,9 +786,47 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     galleryImages: Number(doc.galleryImages ?? 0),
     websiteImages: Number(doc.websiteImages ?? 0),
     totalOrders: Number(doc.totalOrders ?? 0),
-    recentOrders: (doc.recentOrders ?? []).map(normalizeOrder),
-    recentProducts: (doc.recentProducts ?? []).map(normalizeProduct),
+    totalCustomOrders: Number(doc.totalCustomOrders ?? 0),
+    orderRevenueBirr: orders.reduce((sum: number, order: CustomerOrder) => sum + order.totalBirr, 0),
+    orderRevenueUsd: orders.reduce((sum: number, order: CustomerOrder) => sum + order.totalUsd, 0),
+    monthlyRevenue: buildMonthlyRevenue(orders),
+    yearlyRevenue: buildYearlyRevenue(orders),
+    statusCounts: (['Pending', 'Confirmed', 'Delivered'] as OrderStatus[]).map((status) => ({
+      status,
+      count: orders.filter((order: CustomerOrder) => order.status === status).length,
+    })),
   }
+}
+
+function buildMonthlyRevenue(orders: CustomerOrder[]) {
+  const formatter = new Intl.DateTimeFormat('en-US', { month: 'short' })
+  const now = new Date()
+  return Array.from({ length: 12 }, (_, offset) => {
+    const date = new Date(now.getFullYear(), now.getMonth() - (11 - offset), 1)
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+    const matching = orders.filter((order) => {
+      const orderDate = new Date(order.timestamp)
+      return `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}` === key
+    })
+    return {
+      label: formatter.format(date),
+      totalBirr: matching.reduce((sum, order) => sum + order.totalBirr, 0),
+      totalUsd: matching.reduce((sum, order) => sum + order.totalUsd, 0),
+    }
+  })
+}
+
+function buildYearlyRevenue(orders: CustomerOrder[]) {
+  const currentYear = new Date().getFullYear()
+  return Array.from({ length: 5 }, (_, offset) => {
+    const year = currentYear - (4 - offset)
+    const matching = orders.filter((order) => new Date(order.timestamp).getFullYear() === year)
+    return {
+      label: String(year),
+      totalBirr: matching.reduce((sum, order) => sum + order.totalBirr, 0),
+      totalUsd: matching.reduce((sum, order) => sum + order.totalUsd, 0),
+    }
+  })
 }
 
 export async function ensureCategory(title: string) {

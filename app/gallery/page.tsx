@@ -5,7 +5,7 @@ import { PageBanner } from '@/components/page-banner'
 import { GalleryClient } from '@/components/gallery-client'
 import { Reveal } from '@/components/reveal'
 import { Button } from '@/components/ui/button'
-import { getGalleryItems } from '@/lib/sanity'
+import { getGalleryCategories, getGalleryItems } from '@/lib/sanity'
 
 import { pageImages } from '@/lib/images'
 
@@ -16,7 +16,8 @@ export const metadata: Metadata = {
 }
 
 export default async function GalleryPage() {
-  const items = await getGalleryItems()
+  const [items, categories] = await Promise.all([getGalleryItems(), getGalleryCategories()])
+  const filters = ['All', ...categories.map((category) => category.title)]
 
   return (
     <>
@@ -27,7 +28,7 @@ export default async function GalleryPage() {
       />
 
       <section className="pb-20 pt-8">
-        <GalleryClient items={items} />
+        <GalleryClient items={items} filters={filters} />
       </section>
 
       <section className="px-5 pb-24 lg:px-8">

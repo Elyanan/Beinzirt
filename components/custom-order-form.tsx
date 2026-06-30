@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, type FormEvent } from 'react'
-import { Upload, CheckCircle2 } from 'lucide-react'
+import { Upload, CheckCircle2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -50,7 +50,9 @@ export function CustomOrderForm() {
     message: '',
   })
   const [errors, setErrors] = useState<FormErrors>({})
-  const [submitted, setSubmitted] = useState(false)
+  const [submittedRequestId, setSubmittedRequestId] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   function handleChange(field: keyof FormData, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -59,21 +61,40 @@ export function CustomOrderForm() {
     }
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    if (submitting) return
     const validationErrors = validate(form)
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
       return
     }
-    setSubmitted(true)
+    setSubmitError('')
+    setSubmitting(true)
+    try {
+      const response = await fetch('/api/custom-orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, submissionId: crypto.randomUUID() }),
+      })
+      const payload = await response.json()
+      if (!response.ok) throw new Error(payload.error || 'Failed to submit custom order.')
+      setSubmittedRequestId(payload.requestId)
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'Failed to submit custom order.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
-  if (submitted) {
+  if (submittedRequestId) {
     return (
       <div className="flex flex-col items-center rounded-2xl border border-border/70 bg-card px-6 py-12 text-center shadow-luxury">
         <CheckCircle2 className="size-12 text-accent" />
         <h3 className="mt-4 font-serif text-2xl text-foreground">Request Submitted</h3>
+        <p className="mt-5 rounded-full bg-secondary px-4 py-2 text-sm font-medium text-foreground">
+          Request ID: {submittedRequestId}
+        </p>
         <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
           Thank you for your custom order request. Our design team will contact you within 1–2 business days.
         </p>
@@ -206,12 +227,25 @@ export function CustomOrderForm() {
         />
         {errors.message && <p className="text-xs text-destructive">{errors.message}</p>}
       </div>
+      {submitError && (
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {submitError}
+        </p>
+      )}
       <Button
         type="submit"
         size="lg"
+        disabled={submitting}
         className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 sm:w-auto"
       >
-        Submit Request
+        {submitting ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Submitting...
+          </>
+        ) : (
+          'Submit Request'
+        )}
       </Button>
     </form>
   )

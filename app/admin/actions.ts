@@ -17,6 +17,7 @@ import {
   seedRequiredCategories,
   slugify,
   uploadSanityImage,
+  type CustomOrderStatus,
   type OrderStatus,
 } from '@/lib/sanity'
 
@@ -43,12 +44,6 @@ function checkbox(formData: FormData, key: string) {
 function fileField(formData: FormData, key: string) {
   const file = formData.get(key)
   return file instanceof File && file.size > 0 ? file : null
-}
-
-function fileFields(formData: FormData, key: string) {
-  return formData
-    .getAll(key)
-    .filter((file): file is File => file instanceof File && file.size > 0)
 }
 
 function lines(value: string) {
@@ -96,18 +91,6 @@ export async function saveProductAction(formData: FormData) {
   const imageAlt = text(formData, 'imageAlt', name)
   const existingFeaturedImageRef = text(formData, 'existingFeaturedImageRef')
   const uploadedFeatured = await uploadImageFromForm(formData, 'featuredImage', imageAlt)
-  const existingGalleryRefs = formData
-    .getAll('galleryImageRefs')
-    .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
-    .map((value) => imageReference(value.trim(), imageAlt))
-    .filter(Boolean)
-
-  const uploadedGallery = []
-  for (const file of fileFields(formData, 'images')) {
-    const uploaded = await uploadSanityImage(file)
-    if (uploaded) uploadedGallery.push(imageReference(uploaded.assetRef, imageAlt))
-  }
-
   const featuredImage = uploadedFeatured ?? imageReference(existingFeaturedImageRef, imageAlt)
 
   await sanityMutate([
@@ -120,11 +103,14 @@ export async function saveProductAction(formData: FormData) {
         category: { _type: 'reference', _ref: categoryId },
         categoryName: categoryTitle,
         description: text(formData, 'description'),
-        price: numberField(formData, 'price'),
+        price: numberField(formData, 'priceUsd'),
+        priceBirr: numberField(formData, 'priceBirr'),
+        priceUsd: numberField(formData, 'priceUsd'),
         featuredImage,
-        images: [...existingGalleryRefs, ...uploadedGallery],
+        images: [],
         availability: checkbox(formData, 'availability'),
-        featured: checkbox(formData, 'featured'),
+        featured: checkbox(formData, 'bestSeller'),
+        bestSeller: checkbox(formData, 'bestSeller'),
         sortOrder: numberField(formData, 'sortOrder', 999),
         updatedDate: new Date().toISOString(),
       },
@@ -223,6 +209,38 @@ export async function deleteGalleryItemAction(formData: FormData) {
   revalidatePath('/admin/gallery')
 }
 
+export async function saveGalleryCategoryAction(formData: FormData) {
+  await assertAdmin()
+  const title = text(formData, 'title')
+  const slug = slugify(text(formData, 'slug', title))
+  const id = text(formData, 'id') || `galleryCategory.${slug}`
+
+  await sanityMutate([
+    {
+      createOrReplace: {
+        _id: id,
+        _type: 'galleryCategory',
+        title,
+        slug: { _type: 'slug', current: slug },
+        sortOrder: numberField(formData, 'sortOrder', 999),
+        hidden: checkbox(formData, 'hidden'),
+        updatedDate: new Date().toISOString(),
+      },
+    },
+  ])
+
+  revalidatePath('/gallery')
+  revalidatePath('/admin/gallery')
+}
+
+export async function deleteGalleryCategoryAction(formData: FormData) {
+  await assertAdmin()
+  const id = text(formData, 'id')
+  if (id) await sanityMutate([{ delete: { id } }])
+  revalidatePath('/gallery')
+  revalidatePath('/admin/gallery')
+}
+
 export async function updateOrderStatusAction(formData: FormData) {
   await assertAdmin()
   const id = text(formData, 'id')
@@ -239,6 +257,25 @@ export async function deleteOrderAction(formData: FormData) {
   const id = text(formData, 'id')
   if (id) await sanityMutate([{ delete: { id } }])
   revalidatePath('/admin/orders')
+  revalidatePath('/admin/dashboard')
+}
+
+export async function updateCustomOrderStatusAction(formData: FormData) {
+  await assertAdmin()
+  const id = text(formData, 'id')
+  const status = text(formData, 'status', 'Pending') as CustomOrderStatus
+  if (id) {
+    await sanityMutate([{ patch: { id, set: { status, updatedDate: new Date().toISOString() } } }])
+  }
+  revalidatePath('/admin/custom-orders')
+  revalidatePath('/admin/dashboard')
+}
+
+export async function deleteCustomOrderAction(formData: FormData) {
+  await assertAdmin()
+  const id = text(formData, 'id')
+  if (id) await sanityMutate([{ delete: { id } }])
+  revalidatePath('/admin/custom-orders')
   revalidatePath('/admin/dashboard')
 }
 
@@ -261,6 +298,7 @@ export async function saveHomepageAction(formData: FormData) {
   }
 
   const heroImage = await uploadImageFromForm(formData, 'heroImage', text(formData, 'heroImageAlt'))
+  if (checkbox(formData, 'deleteHeroImage')) set['hero.image'] = null
   if (heroImage) set['hero.image'] = heroImage
 
   await sanityMutate([
@@ -282,6 +320,8 @@ export async function saveAboutAction(formData: FormData) {
 
   const bannerImage = await uploadImageFromForm(formData, 'bannerImage', 'About Beinzirt')
   const storyImage = await uploadImageFromForm(formData, 'storyImage', 'Beinzirt story')
+  if (checkbox(formData, 'deleteBannerImage')) set.bannerImage = null
+  if (checkbox(formData, 'deleteStoryImage')) set.storyImage = null
   if (bannerImage) set.bannerImage = bannerImage
   if (storyImage) set.storyImage = storyImage
 
@@ -313,6 +353,7 @@ export async function saveContactAction(formData: FormData) {
   }
 
   const storeImage = await uploadImageFromForm(formData, 'storeImage', 'Beinzirt store')
+  if (checkbox(formData, 'deleteStoreImage')) set.storeImage = null
   if (storeImage) set.storeImage = storeImage
 
   await sanityMutate([
@@ -338,6 +379,7 @@ export async function saveFooterAction(formData: FormData) {
   }
 
   const logo = await uploadImageFromForm(formData, 'logo', 'Beinzirt logo')
+  if (checkbox(formData, 'deleteLogo')) set.logo = null
   if (logo) set.logo = logo
 
   await sanityMutate([

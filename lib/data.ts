@@ -5,11 +5,14 @@ export type Product = {
   slug?: string
   name: string
   category: string
-  price: number
+  price?: number
+  priceBirr: number
+  priceUsd: number
   image: string
   images?: string[]
   description: string
   availability?: boolean
+  bestSeller?: boolean
   featured?: boolean
   sortOrder?: number
   createdAt?: string
@@ -41,11 +44,14 @@ export const products: Product[] = [
     name: 'Menen Habesha Kemis',
     category: 'Dresses',
     price: 240,
+    priceBirr: 33600,
+    priceUsd: 240,
     image: d.d1,
     images: [d.d1, d.d2],
     description:
       'A flowing handwoven cotton dress finished with a delicate gold tibeb border, perfect for ceremonies and celebrations.',
     availability: true,
+    bestSeller: true,
     featured: true,
     sortOrder: 1,
   },
@@ -55,11 +61,14 @@ export const products: Product[] = [
     name: 'Zuria Ceremonial Dress',
     category: 'Dresses',
     price: 285,
+    priceBirr: 39900,
+    priceUsd: 285,
     image: d.d2,
     images: [d.d2, d.d9],
     description:
       'An elegant ceremonial gown with intricate hand-embroidered borders in red, green, and gold.',
     availability: true,
+    bestSeller: true,
     featured: true,
     sortOrder: 2,
   },
@@ -69,11 +78,14 @@ export const products: Product[] = [
     name: 'Tibeb Celebration Dress',
     category: 'Dresses',
     price: 260,
+    priceBirr: 36400,
+    priceUsd: 260,
     image: d.d5,
     images: [d.d5, d.d8],
     description:
       'A graceful handmade dress blending contemporary shape with traditional woven border work.',
     availability: true,
+    bestSeller: false,
     featured: false,
     sortOrder: 3,
   },
@@ -83,11 +95,14 @@ export const products: Product[] = [
     name: 'Bridal Gold Border Dress',
     category: 'Dresses',
     price: 340,
+    priceBirr: 47600,
+    priceUsd: 340,
     image: d.d9,
     images: [d.d9, d.d1],
     description:
       'A statement ceremonial dress with luminous gold details for weddings and treasured occasions.',
     availability: true,
+    bestSeller: false,
     featured: false,
     sortOrder: 4,
   },
@@ -97,11 +112,14 @@ export const products: Product[] = [
     name: 'Netela Sheer Scarf',
     category: 'Scarves',
     price: 75,
+    priceBirr: 10500,
+    priceUsd: 75,
     image: s.s1,
     images: [s.s1, s.s2],
     description:
       'A sheer, lightweight netela with a vivid woven border, an everyday emblem of heritage.',
     availability: true,
+    bestSeller: true,
     featured: true,
     sortOrder: 5,
   },
@@ -111,11 +129,14 @@ export const products: Product[] = [
     name: 'Golden Border Shawl',
     category: 'Scarves',
     price: 110,
+    priceBirr: 15400,
+    priceUsd: 110,
     image: s.s4,
     images: [s.s4, s.s3],
     description:
       'A luxurious shawl with a rich golden woven border for special occasions and elegant layering.',
     availability: true,
+    bestSeller: true,
     featured: true,
     sortOrder: 6,
   },
@@ -125,11 +146,14 @@ export const products: Product[] = [
     name: 'Classic Cotton Scarf',
     category: 'Scarves',
     price: 90,
+    priceBirr: 12600,
+    priceUsd: 90,
     image: s.s2,
     images: [s.s2, s.s1],
     description:
       'Soft handwoven cotton with subtle texture and a traditional finish for daily wear.',
     availability: true,
+    bestSeller: false,
     featured: false,
     sortOrder: 7,
   },
@@ -139,11 +163,14 @@ export const products: Product[] = [
     name: 'Heritage Pattern Scarf',
     category: 'Scarves',
     price: 98,
+    priceBirr: 13700,
+    priceUsd: 98,
     image: s.s3,
     images: [s.s3, s.s4],
     description:
       'A refined scarf with handloom patterning that pairs beautifully with modern and traditional looks.',
     availability: true,
+    bestSeller: false,
     featured: false,
     sortOrder: 8,
   },

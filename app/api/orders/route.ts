@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { sanityMutate, type OrderLineItem } from '@/lib/sanity'
+import { deliveryFeeForBirr } from '@/lib/pricing'
 
 function orderId() {
   const now = new Date()
@@ -36,19 +37,31 @@ export async function POST(request: Request) {
 
     const normalizedItems: OrderLineItem[] = items.map((item: any) => {
       const quantity = Math.max(1, Number(item.quantity ?? 1))
-      const price = Math.max(0, Number(item.price ?? 0))
+      const priceBirr = Math.max(0, Number(item.priceBirr ?? item.price ?? 0))
+      const priceUsd = Math.max(0, Number(item.priceUsd ?? item.price ?? 0))
       return {
         productId: cleanString(item.productId || item.id),
         name: cleanString(item.name),
         category: cleanString(item.category),
         quantity,
-        price,
-        subtotal: quantity * price,
+        price: priceUsd,
+        subtotal: quantity * priceUsd,
+        priceBirr,
+        priceUsd,
+        subtotalBirr: quantity * priceBirr,
+        subtotalUsd: quantity * priceUsd,
         image: cleanString(item.image),
       }
     })
 
-    const total = normalizedItems.reduce((sum, item) => sum + item.subtotal, 0)
+    const subtotalBirr = normalizedItems.reduce((sum, item) => sum + item.subtotalBirr, 0)
+    const subtotalUsd = normalizedItems.reduce((sum, item) => sum + item.subtotalUsd, 0)
+    const deliveryFeeBirr = Math.max(
+      0,
+      Number(body.deliveryFeeBirr ?? deliveryFeeForBirr(subtotalBirr)),
+    )
+    const totalBirr = subtotalBirr + deliveryFeeBirr
+    const totalUsd = subtotalUsd
     const generatedOrderId = orderId()
     const documentId = `order.${submissionId}`
 
@@ -64,7 +77,12 @@ export async function POST(request: Request) {
           address,
           notes,
           items: normalizedItems,
-          total,
+          subtotalBirr,
+          subtotalUsd,
+          deliveryFeeBirr,
+          totalBirr,
+          totalUsd,
+          total: totalBirr,
           timestamp: new Date().toISOString(),
           status: 'Pending',
         },

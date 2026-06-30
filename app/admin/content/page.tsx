@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import {
   saveAboutAction,
   saveContactAction,
@@ -10,6 +11,28 @@ import {
   getFooterContent,
   getHomepageContent,
 } from '@/lib/sanity'
+
+function ImagePreview({
+  src,
+  alt,
+  deleteName,
+}: {
+  src: string
+  alt: string
+  deleteName: string
+}) {
+  return (
+    <div className="rounded-lg border border-border bg-background p-3">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-muted">
+        <Image src={src} alt={alt} fill sizes="220px" className="object-cover" />
+      </div>
+      <label className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+        <input type="checkbox" name={deleteName} />
+        Remove current image
+      </label>
+    </div>
+  )
+}
 
 export default async function AdminContentPage() {
   const [home, about, contact, footer] = await Promise.all([
@@ -37,6 +60,7 @@ export default async function AdminContentPage() {
           <input name="heroSecondaryButtonText" defaultValue={home.hero.secondaryButtonText} placeholder="Secondary button text" className="admin-input" />
           <input name="heroSecondaryButtonLink" defaultValue={home.hero.secondaryButtonLink} placeholder="Secondary button link" className="admin-input" />
           <input name="heroImageAlt" defaultValue={home.hero.imageAlt} placeholder="Hero image alt text" className="admin-input" />
+          <ImagePreview src={home.hero.image} alt={home.hero.imageAlt} deleteName="deleteHeroImage" />
           <input name="heroImage" type="file" accept="image/*" className="admin-file" />
           <input name="heritageEyebrow" defaultValue={home.heritageEyebrow} placeholder="Heritage eyebrow" className="admin-input" />
           <input name="heritageTitle" defaultValue={home.heritageTitle} placeholder="Heritage title" className="admin-input" />
@@ -54,6 +78,8 @@ export default async function AdminContentPage() {
           <textarea name="mission" defaultValue={about.mission} rows={4} placeholder="Mission" className="admin-textarea" />
           <textarea name="vision" defaultValue={about.vision} rows={4} placeholder="Vision" className="admin-textarea" />
           <textarea name="storyParagraphs" defaultValue={about.storyParagraphs.join('\n')} rows={7} placeholder="One paragraph per line" className="admin-textarea lg:col-span-2" />
+          <ImagePreview src={about.bannerImage} alt="Current about banner" deleteName="deleteBannerImage" />
+          <ImagePreview src={about.storyImage} alt="Current about story" deleteName="deleteStoryImage" />
           <label className="text-sm">
             Banner Image
             <input name="bannerImage" type="file" accept="image/*" className="admin-file mt-2" />
@@ -78,6 +104,7 @@ export default async function AdminContentPage() {
           <input name="pinterest" defaultValue={contact.socialLinks.find((item) => item.label === 'Pinterest')?.href ?? ''} placeholder="Pinterest URL" className="admin-input" />
           <input name="telegram" defaultValue={contact.socialLinks.find((item) => item.label === 'Telegram Channel')?.href ?? ''} placeholder="Telegram Channel URL" className="admin-input" />
           <input name="whatsapp" defaultValue={contact.socialLinks.find((item) => item.label === 'WhatsApp')?.href ?? ''} placeholder="WhatsApp URL" className="admin-input" />
+          <ImagePreview src={contact.storeImage} alt="Current contact store" deleteName="deleteStoreImage" />
           <input name="storeImage" type="file" accept="image/*" className="admin-file" />
           <textarea name="address" defaultValue={contact.address} rows={3} placeholder="Address" className="admin-textarea lg:col-span-2" />
           <textarea name="mapIframe" defaultValue={contact.mapIframe} rows={4} placeholder="Google Maps iframe src" className="admin-textarea lg:col-span-2" />
@@ -93,6 +120,7 @@ export default async function AdminContentPage() {
           <input name="phone" defaultValue={footer.contactInfo.phone} placeholder="Phone" className="admin-input" />
           <input name="email" defaultValue={footer.contactInfo.email} placeholder="Email" className="admin-input" />
           <input name="hours" defaultValue={footer.contactInfo.hours} placeholder="Hours" className="admin-input" />
+          <ImagePreview src={footer.logo} alt="Current footer logo" deleteName="deleteLogo" />
           <input name="logo" type="file" accept="image/*" className="admin-file" />
           <textarea name="location" defaultValue={footer.contactInfo.location} rows={3} placeholder="Location" className="admin-textarea lg:col-span-2" />
           <button type="submit" className="admin-submit lg:col-span-2">Save Footer Content</button>

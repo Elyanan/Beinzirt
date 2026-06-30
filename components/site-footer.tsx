@@ -1,6 +1,6 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { Clock, Mail, MapPin, Phone } from 'lucide-react'
-import { SiteLogo } from '@/components/site-logo'
 import { SocialLinks } from '@/components/social-links'
 import { getFooterContent } from '@/lib/sanity'
 
@@ -12,7 +12,15 @@ export async function SiteFooter() {
       <div className="pattern-strip h-1 w-full" />
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-5 lg:px-8">
         <div className="lg:col-span-2">
-          <SiteLogo variant="inverse" size="footer" />
+          <Link href="/" className="inline-flex">
+            <Image
+              src={footer.logo}
+              alt="Beinzirt Design logo"
+              width={210}
+              height={120}
+              className="h-28 w-auto object-contain sm:h-32"
+            />
+          </Link>
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-primary-foreground/70">
             {footer.description}
           </p>
@@ -48,7 +56,7 @@ export async function SiteFooter() {
               <h3 className="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-accent">
                 Social
               </h3>
-              <SocialLinks links={footer.socialLinks} variant="dark" className="mt-4" />
+              <SocialLinks links={footer.socialLinks} variant="dark" className="mt-4" showLabels={false} />
             </>
           ) : null}
         </div>

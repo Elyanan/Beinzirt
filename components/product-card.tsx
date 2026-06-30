@@ -1,12 +1,14 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useState } from 'react'
 import { Eye, Minus, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/components/cart-context'
 import type { Product } from '@/lib/data'
 import { IMAGE_FALLBACK } from '@/lib/images'
+import { formatDualPrice } from '@/lib/pricing'
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem, updateQuantity, getItemQuantity } = useCart()
@@ -31,24 +33,34 @@ export function ProductCard({ product }: { product: Product }) {
     }
 
     return (
-      <div className="animate-fade-up flex items-center rounded-full border border-border bg-background shadow-sm">
-        <button
-          type="button"
-          aria-label={`Decrease ${product.name} quantity`}
-          onClick={() => updateQuantity(product.id, quantity - 1)}
-          className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary"
+      <div className="animate-fade-up flex flex-wrap items-center gap-2">
+        <div className="flex items-center rounded-full border border-border bg-background shadow-sm">
+          <button
+            type="button"
+            aria-label={`Decrease ${product.name} quantity`}
+            onClick={() => updateQuantity(product.id, quantity - 1)}
+            className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary"
+          >
+            <Minus className="size-3.5" />
+          </button>
+          <span className="min-w-9 text-center text-sm font-semibold">{quantity}</span>
+          <button
+            type="button"
+            aria-label={`Increase ${product.name} quantity`}
+            onClick={() => updateQuantity(product.id, quantity + 1)}
+            className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary"
+          >
+            <Plus className="size-3.5" />
+          </button>
+        </div>
+        <Button
+          asChild
+          size={compact ? 'sm' : 'lg'}
+          variant="outline"
+          className="rounded-full border-foreground/20 px-3.5"
         >
-          <Minus className="size-3.5" />
-        </button>
-        <span className="min-w-9 text-center text-sm font-semibold">{quantity}</span>
-        <button
-          type="button"
-          aria-label={`Increase ${product.name} quantity`}
-          onClick={() => updateQuantity(product.id, quantity + 1)}
-          className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary"
-        >
-          <Plus className="size-3.5" />
-        </button>
+          <Link href="/cart">View Cart</Link>
+        </Button>
       </div>
     )
   }
@@ -68,6 +80,11 @@ export function ProductCard({ product }: { product: Product }) {
           <span className="absolute left-3 top-3 rounded-full bg-background/85 px-3 py-1 text-[0.65rem] font-medium uppercase tracking-wider text-foreground backdrop-blur">
             {product.category}
           </span>
+          {(product.bestSeller ?? product.featured) && (
+            <span className="absolute right-3 top-3 rounded-full bg-accent px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-accent-foreground shadow-sm">
+              Best Seller
+            </span>
+          )}
           <button
             type="button"
             onClick={() => setOpen(true)}
@@ -82,7 +99,7 @@ export function ProductCard({ product }: { product: Product }) {
             {product.description}
           </p>
           <div className="mt-4 flex items-center justify-between">
-            <span className="font-serif text-xl text-primary">${product.price}</span>
+            <span className="font-serif text-base text-primary">{formatDualPrice(product)}</span>
             <QuantityControl compact />
           </div>
         </div>
@@ -125,9 +142,9 @@ export function ProductCard({ product }: { product: Product }) {
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {product.description}
               </p>
-              <p className="font-serif text-3xl text-primary">${product.price}</p>
+              <p className="font-serif text-2xl text-primary">{formatDualPrice(product)}</p>
               <p className="text-xs text-muted-foreground">
-                Handwoven to order - Free worldwide shipping over $300
+                Handwoven to order - Free Addis Ababa delivery over ETB 7,000
               </p>
               <QuantityControl />
             </div>

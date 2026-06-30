@@ -7,6 +7,14 @@ import { ArrowRight, CheckCircle2, Loader2, Minus, Plus, ShoppingBag, Trash2 } f
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/components/cart-context'
 import { IMAGE_FALLBACK } from '@/lib/images'
+import {
+  deliveryFeeForBirr,
+  formatBirr,
+  formatDualPrice,
+  formatUsd,
+  productPriceBirr,
+  productPriceUsd,
+} from '@/lib/pricing'
 
 type CheckoutForm = {
   customerName: string
@@ -24,18 +32,16 @@ const initialForm: CheckoutForm = {
   notes: '',
 }
 
-function money(value: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
-}
-
 export function CartClient() {
-  const { items, subtotal, updateQuantity, removeItem, clear } = useCart()
+  const { items, subtotalBirr, subtotalUsd, updateQuantity, removeItem, clear } = useCart()
   const [form, setForm] = useState(initialForm)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [successOrderId, setSuccessOrderId] = useState('')
 
-  const total = subtotal
+  const deliveryFeeBirr = deliveryFeeForBirr(subtotalBirr)
+  const totalBirr = subtotalBirr + deliveryFeeBirr
+  const totalUsd = subtotalUsd
   const orderItems = useMemo(
     () =>
       items.map((item) => ({
@@ -43,7 +49,8 @@ export function CartClient() {
         name: item.name,
         category: item.category,
         quantity: item.quantity,
-        price: item.price,
+        priceBirr: productPriceBirr(item),
+        priceUsd: productPriceUsd(item),
         image: item.image,
       })),
     [items],
@@ -67,6 +74,7 @@ export function CartClient() {
         body: JSON.stringify({
           ...form,
           items: orderItems,
+          deliveryFeeBirr,
           submissionId: crypto.randomUUID(),
         }),
       })
@@ -84,7 +92,7 @@ export function CartClient() {
 
   if (successOrderId) {
     return (
-      <div className="mx-auto max-w-2xl px-5 py-10 text-center lg:px-8">
+      <div className="mx-auto max-w-2xl px-5 pb-10 pt-32 text-center lg:px-8">
         <div className="rounded-3xl border border-emerald-300 bg-emerald-50 px-6 py-12 shadow-luxury">
           <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-600 text-white">
             <CheckCircle2 className="size-8" />
@@ -109,7 +117,7 @@ export function CartClient() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-xl px-5 py-10 text-center lg:px-8">
+      <div className="mx-auto max-w-xl px-5 pb-10 pt-32 text-center lg:px-8">
         <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
           <ShoppingBag className="size-7" />
         </div>
@@ -127,7 +135,7 @@ export function CartClient() {
   }
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-10 px-5 pb-20 lg:grid-cols-[1.45fr_1fr] lg:px-8">
+    <div className="mx-auto grid max-w-6xl gap-10 px-5 pb-20 pt-32 lg:grid-cols-[1.45fr_1fr] lg:px-8">
       <div>
         <ul className="divide-y divide-border rounded-2xl border border-border bg-card">
           {items.map((item) => (
@@ -160,7 +168,8 @@ export function CartClient() {
                     </button>
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">
-                    Unit Price: <span className="font-medium text-foreground">{money(item.price)}</span>
+                    Unit Price:{' '}
+                    <span className="font-medium text-foreground">{formatDualPrice(item)}</span>
                   </p>
                 </div>
                 <div className="flex items-center justify-between gap-4 md:flex-col md:items-end">
@@ -183,7 +192,12 @@ export function CartClient() {
                       <Plus className="size-3.5" />
                     </button>
                   </div>
-                  <p className="font-serif text-lg text-primary">{money(item.price * item.quantity)}</p>
+                  <p className="text-right font-serif text-base text-primary">
+                    {formatBirr(productPriceBirr(item) * item.quantity)}
+                    <span className="block text-xs text-muted-foreground">
+                      {formatUsd(productPriceUsd(item) * item.quantity)}
+                    </span>
+                  </p>
                 </div>
               </div>
             </li>
@@ -211,13 +225,30 @@ export function CartClient() {
           <dl className="mt-5 space-y-3 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Subtotal</dt>
-              <dd className="font-medium text-foreground">{money(subtotal)}</dd>
+              <dd className="text-right font-medium text-foreground">
+                {formatBirr(subtotalBirr)}
+                <span className="block text-xs text-muted-foreground">{formatUsd(subtotalUsd)}</span>
+              </dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-muted-foreground">Delivery Fee</dt>
+              <dd className="font-medium text-foreground">
+                {deliveryFeeBirr ? formatBirr(deliveryFeeBirr) : 'Free'}
+              </dd>
             </div>
             <div className="flex justify-between border-t border-border pt-3">
               <dt className="font-serif text-base text-foreground">Grand Total</dt>
-              <dd className="font-serif text-xl text-primary">{money(total)}</dd>
+              <dd className="text-right font-serif text-xl text-primary">
+                {formatBirr(totalBirr)}
+                <span className="block text-xs font-sans text-muted-foreground">
+                  {formatUsd(totalUsd)} before local delivery conversion
+                </span>
+              </dd>
             </div>
           </dl>
+          <p className="mt-4 rounded-lg bg-secondary/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+            Delivery is {formatBirr(300)} and becomes free when your cart is over {formatBirr(7000)}.
+          </p>
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-6 shadow-luxury">

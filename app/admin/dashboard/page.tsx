@@ -1,10 +1,8 @@
 import Link from 'next/link'
-import { Box, GalleryHorizontalEnd, ImageIcon, Package, ReceiptText } from 'lucide-react'
+import { Box, ClipboardList, GalleryHorizontalEnd, ImageIcon, Package, ReceiptText, Wallet } from 'lucide-react'
+import { AdminRevenueChart } from '@/components/admin-revenue-chart'
 import { getDashboardStats } from '@/lib/sanity'
-
-function money(value: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
-}
+import { formatBirr, formatUsd } from '@/lib/pricing'
 
 export default async function AdminDashboardPage() {
   const stats = await getDashboardStats()
@@ -14,6 +12,7 @@ export default async function AdminDashboardPage() {
     { label: 'Gallery Images', value: stats.galleryImages, icon: GalleryHorizontalEnd, href: '/admin/gallery' },
     { label: 'Website Images', value: stats.websiteImages, icon: ImageIcon, href: '/admin/content' },
     { label: 'Total Orders', value: stats.totalOrders, icon: ReceiptText, href: '/admin/orders' },
+    { label: 'Custom Orders', value: stats.totalCustomOrders, icon: ClipboardList, href: '/admin/custom-orders' },
   ]
 
   return (
@@ -23,7 +22,7 @@ export default async function AdminDashboardPage() {
         <h1 className="mt-2 font-serif text-3xl text-foreground">Dashboard</h1>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
         {cards.map((card) => (
           <Link
             key={card.label}
@@ -43,78 +42,33 @@ export default async function AdminDashboardPage() {
         ))}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-2">
-        <section className="rounded-xl border border-border/80 bg-card p-5 shadow-luxury">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="font-serif text-xl">Recent Orders</h2>
-            <Link href="/admin/orders" className="text-sm font-medium text-accent hover:underline">
-              View all
-            </Link>
-          </div>
-          <div className="mt-5 overflow-x-auto">
-            <table className="w-full min-w-[520px] text-left text-sm">
-              <thead className="text-xs uppercase tracking-wider text-muted-foreground">
-                <tr>
-                  <th className="border-b border-border py-3">Order</th>
-                  <th className="border-b border-border py-3">Customer</th>
-                  <th className="border-b border-border py-3">Status</th>
-                  <th className="border-b border-border py-3 text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stats.recentOrders.length ? (
-                  stats.recentOrders.map((order) => (
-                    <tr key={order.id} className="border-b border-border/60 last:border-0">
-                      <td className="py-3 font-medium">{order.orderId}</td>
-                      <td className="py-3 text-muted-foreground">{order.customerName}</td>
-                      <td className="py-3">
-                        <span className="rounded-full bg-secondary px-2.5 py-1 text-xs">
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="py-3 text-right font-medium">{money(order.total)}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="py-8 text-center text-muted-foreground">
-                      No orders yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
+      <div className="grid gap-6 xl:grid-cols-[1.4fr_0.8fr]">
+        <AdminRevenueChart monthly={stats.monthlyRevenue} yearly={stats.yearlyRevenue} />
 
-        <section className="rounded-xl border border-border/80 bg-card p-5 shadow-luxury">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="font-serif text-xl">Recently Added Products</h2>
-            <Link href="/admin/products/new" className="text-sm font-medium text-accent hover:underline">
-              Add product
-            </Link>
+        <section className="space-y-4">
+          <div className="rounded-xl border border-border/80 bg-card p-5 shadow-luxury">
+            <div className="flex items-center gap-3">
+              <span className="flex size-11 items-center justify-center rounded-full bg-accent/15 text-accent">
+                <Wallet className="size-5" />
+              </span>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Revenue</p>
+                <p className="font-serif text-2xl text-primary">{formatBirr(stats.orderRevenueBirr)}</p>
+                <p className="text-xs text-muted-foreground">{formatUsd(stats.orderRevenueUsd)}</p>
+              </div>
+            </div>
           </div>
-          <div className="mt-5 space-y-3">
-            {stats.recentProducts.length ? (
-              stats.recentProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex items-center justify-between gap-4 rounded-lg border border-border/70 bg-background/60 px-4 py-3"
-                >
-                  <div>
-                    <p className="font-medium text-foreground">{product.name}</p>
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                      {product.category || 'Uncategorized'}
-                    </p>
-                  </div>
-                  <p className="font-serif text-lg text-primary">{money(product.price)}</p>
+
+          <div className="rounded-xl border border-border/80 bg-card p-5 shadow-luxury">
+            <h2 className="font-serif text-xl">Order Status</h2>
+            <div className="mt-4 space-y-3">
+              {stats.statusCounts.map((item) => (
+                <div key={item.status} className="flex items-center justify-between rounded-lg bg-background/60 px-4 py-3">
+                  <span className="text-sm text-muted-foreground">{item.status}</span>
+                  <span className="font-serif text-xl text-foreground">{item.count}</span>
                 </div>
-              ))
-            ) : (
-              <p className="rounded-lg border border-border/70 bg-background/60 px-4 py-8 text-center text-sm text-muted-foreground">
-                No products yet.
-              </p>
-            )}
+              ))}
+            </div>
           </div>
         </section>
       </div>

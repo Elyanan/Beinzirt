@@ -1,51 +1,53 @@
 import { Trash2 } from 'lucide-react'
-import { deleteOrderAction, updateOrderStatusAction } from '@/app/admin/actions'
+import {
+  deleteCustomOrderAction,
+  updateCustomOrderStatusAction,
+} from '@/app/admin/actions'
 import { ConfirmActionForm } from '@/components/confirm-action-form'
-import { getOrders, type OrderStatus } from '@/lib/sanity'
-import { formatBirr, formatUsd } from '@/lib/pricing'
+import { getCustomOrders, type CustomOrderStatus } from '@/lib/sanity'
 
-const statuses: OrderStatus[] = ['Pending', 'Confirmed', 'Delivered']
+const statuses: CustomOrderStatus[] = ['Pending', 'Confirmed', 'Delivered']
 
-export default async function AdminOrdersPage({
+export default async function AdminCustomOrdersPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; status?: string; sort?: string }>
 }) {
   const params = await searchParams
-  const orders = await getOrders()
+  const customOrders = await getCustomOrders()
   const query = (params.q ?? '').toLowerCase()
   const status = params.status ?? 'All'
   const sort = params.sort ?? 'newest'
 
-  const filtered = orders
+  const filtered = customOrders
     .filter((order) => {
       const matchesQuery =
         !query ||
-        order.orderId.toLowerCase().includes(query) ||
-        order.customerName.toLowerCase().includes(query) ||
+        order.requestId.toLowerCase().includes(query) ||
+        order.name.toLowerCase().includes(query) ||
+        order.phone.toLowerCase().includes(query) ||
         order.email.toLowerCase().includes(query) ||
-        order.phone.toLowerCase().includes(query)
+        order.productType.toLowerCase().includes(query)
       const matchesStatus = status === 'All' || order.status === status
       return matchesQuery && matchesStatus
     })
     .sort((a, b) => {
       if (sort === 'oldest') return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-      if (sort === 'total-desc') return b.totalBirr - a.totalBirr
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     })
 
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-accent">Commerce</p>
-        <h1 className="mt-2 font-serif text-3xl">Orders</h1>
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-accent">Bespoke</p>
+        <h1 className="mt-2 font-serif text-3xl">Custom Orders</h1>
       </div>
 
       <form className="grid gap-3 rounded-xl border border-border/80 bg-card p-4 shadow-luxury lg:grid-cols-[1fr_180px_180px_auto]">
         <input
           name="q"
           defaultValue={params.q ?? ''}
-          placeholder="Search orders..."
+          placeholder="Search custom orders..."
           className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
         />
         <select
@@ -65,7 +67,6 @@ export default async function AdminOrdersPage({
         >
           <option value="newest">Newest</option>
           <option value="oldest">Oldest</option>
-          <option value="total-desc">Highest Total</option>
         </select>
         <button
           type="submit"
@@ -80,23 +81,22 @@ export default async function AdminOrdersPage({
           <article key={order.id} className="rounded-xl border border-border/80 bg-card p-5 shadow-luxury">
             <div className="grid gap-4 xl:grid-cols-[1fr_1fr_auto]">
               <div>
-                <p className="text-xs uppercase tracking-wider text-muted-foreground">Order ID</p>
-                <h2 className="mt-1 font-serif text-xl">{order.orderId}</h2>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">Request ID</p>
+                <h2 className="mt-1 font-serif text-xl">{order.requestId}</h2>
                 <p className="mt-2 text-sm text-muted-foreground">
                   {new Date(order.timestamp).toLocaleString()}
                 </p>
               </div>
               <div className="grid gap-2 text-sm sm:grid-cols-2">
-                <p><span className="text-muted-foreground">Customer:</span> {order.customerName}</p>
+                <p><span className="text-muted-foreground">Customer:</span> {order.name}</p>
                 <p><span className="text-muted-foreground">Phone:</span> {order.phone}</p>
                 <p><span className="text-muted-foreground">Email:</span> {order.email}</p>
-                <p>
-                  <span className="text-muted-foreground">Total:</span>{' '}
-                  {formatBirr(order.totalBirr)} / {formatUsd(order.totalUsd)}
-                </p>
+                <p><span className="text-muted-foreground">Product:</span> {order.productType}</p>
+                {order.occasion ? <p><span className="text-muted-foreground">Occasion:</span> {order.occasion}</p> : null}
+                {order.deadline ? <p><span className="text-muted-foreground">Deadline:</span> {order.deadline}</p> : null}
               </div>
               <div className="flex flex-wrap items-start gap-2 xl:justify-end">
-                <form action={updateOrderStatusAction} className="flex gap-2">
+                <form action={updateCustomOrderStatusAction} className="flex gap-2">
                   <input type="hidden" name="id" value={order.id} />
                   <select
                     name="status"
@@ -115,80 +115,34 @@ export default async function AdminOrdersPage({
                   </button>
                 </form>
                 <ConfirmActionForm
-                  action={deleteOrderAction}
+                  action={deleteCustomOrderAction}
                   id={order.id}
-                  message={`Delete order ${order.orderId}? This cannot be undone.`}
+                  message={`Delete custom order ${order.requestId}? This cannot be undone.`}
                 >
                   <button
                     type="submit"
                     className="inline-flex size-10 items-center justify-center rounded-full border border-border text-destructive hover:bg-destructive/10"
-                    aria-label={`Delete ${order.orderId}`}
+                    aria-label={`Delete ${order.requestId}`}
                   >
                     <Trash2 className="size-4" />
                   </button>
                 </ConfirmActionForm>
               </div>
             </div>
-
-            <div className="mt-5 overflow-x-auto rounded-lg border border-border">
-              <table className="w-full min-w-[640px] text-left text-sm">
-                <thead className="bg-secondary/70 text-xs uppercase tracking-wider text-muted-foreground">
-                  <tr>
-                    <th className="px-3 py-2">Product</th>
-                    <th className="px-3 py-2">Category</th>
-                    <th className="px-3 py-2">Qty</th>
-                    <th className="px-3 py-2">Price</th>
-                    <th className="px-3 py-2 text-right">Subtotal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.items.map((item, index) => (
-                    <tr key={`${order.id}-${item.productId}-${index}`} className="border-t border-border">
-                      <td className="px-3 py-2">{item.name}</td>
-                      <td className="px-3 py-2 text-muted-foreground">{item.category}</td>
-                      <td className="px-3 py-2">{item.quantity}</td>
-                      <td className="px-3 py-2">
-                        {formatBirr(item.priceBirr)}
-                        <span className="block text-xs text-muted-foreground">{formatUsd(item.priceUsd)}</span>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        {formatBirr(item.subtotalBirr)}
-                        <span className="block text-xs text-muted-foreground">{formatUsd(item.subtotalUsd)}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="mt-4 grid gap-2 rounded-lg border border-border bg-background/50 p-3 text-sm sm:grid-cols-3">
-              <p>
-                <span className="text-muted-foreground">Subtotal:</span>{' '}
-                {formatBirr(order.subtotalBirr)}
-              </p>
-              <p>
-                <span className="text-muted-foreground">Delivery:</span>{' '}
-                {order.deliveryFeeBirr ? formatBirr(order.deliveryFeeBirr) : 'Free'}
-              </p>
-              <p>
-                <span className="text-muted-foreground">Grand Total:</span>{' '}
-                {formatBirr(order.totalBirr)}
+            <div className="mt-5 rounded-lg border border-border bg-background/60 p-4 text-sm">
+              <div className="grid gap-2 sm:grid-cols-2">
+                {order.colors ? <p><span className="text-muted-foreground">Colors:</span> {order.colors}</p> : null}
+                {order.size ? <p><span className="text-muted-foreground">Size:</span> {order.size}</p> : null}
+              </div>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                <span className="text-foreground">Message:</span> {order.message}
               </p>
             </div>
-            {order.address && (
-              <p className="mt-4 text-sm text-muted-foreground">
-                Delivery Address: <span className="text-foreground">{order.address}</span>
-              </p>
-            )}
-            {order.notes && (
-              <p className="mt-2 text-sm text-muted-foreground">
-                Notes: <span className="text-foreground">{order.notes}</span>
-              </p>
-            )}
           </article>
         ))}
         {!filtered.length && (
           <div className="rounded-xl border border-border/80 bg-card p-10 text-center text-muted-foreground shadow-luxury">
-            No orders found.
+            No custom orders found.
           </div>
         )}
       </div>

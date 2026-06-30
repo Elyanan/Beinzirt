@@ -59,15 +59,17 @@ export function SocialLinks({
   links,
   variant = 'light',
   className,
+  showLabels = true,
 }: {
   links: SocialLink[]
   variant?: 'light' | 'dark'
   className?: string
+  showLabels?: boolean
 }) {
   if (!links.length) return null
 
   return (
-    <div className={cn('flex flex-wrap gap-2', className)}>
+    <div className={cn('flex flex-wrap items-center gap-2', className)}>
       {links.map((link) => (
         <a
           key={`${link.label}-${link.href}`}
@@ -76,14 +78,15 @@ export function SocialLinks({
           rel="noreferrer"
           aria-label={`Visit Beinzirt on ${link.label}`}
           className={cn(
-            'inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-all',
+            'inline-flex items-center justify-center gap-2 rounded-full border font-medium transition-all',
+            showLabels ? 'px-3 py-2 text-sm' : 'size-9 p-0 text-sm',
             variant === 'dark'
               ? 'border-primary-foreground/15 text-primary-foreground/75 hover:border-accent hover:text-accent'
               : 'border-border bg-card text-foreground/75 hover:border-accent hover:text-foreground',
           )}
         >
           <SocialIcon label={link.label} />
-          <span>{link.label}</span>
+          {showLabels ? <span>{link.label}</span> : <span className="sr-only">{link.label}</span>}
         </a>
       ))}
     </div>

@@ -51,14 +51,26 @@ export function AdminProductForm({
           </select>
         </div>
         <div>
-          <label className="text-sm font-medium">Price *</label>
+          <label className="text-sm font-medium">Price in ETB *</label>
           <input
-            name="price"
+            name="priceBirr"
+            type="number"
+            min="0"
+            step="1"
+            required
+            defaultValue={product?.priceBirr ?? ''}
+            className="mt-2 h-11 w-full rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium">Price in USD *</label>
+          <input
+            name="priceUsd"
             type="number"
             min="0"
             step="0.01"
             required
-            defaultValue={product?.price ?? ''}
+            defaultValue={product?.priceUsd ?? product?.price ?? ''}
             className="mt-2 h-11 w-full rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
         </div>
@@ -94,16 +106,6 @@ export function AdminProductForm({
               className="mt-2 h-11 w-full rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
             />
           </div>
-          <div>
-            <label className="text-sm font-medium">Additional Images</label>
-            <input
-              name="images"
-              type="file"
-              accept="image/*"
-              multiple
-              className="mt-2 block w-full rounded-lg border border-border bg-background px-4 py-3 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:text-primary-foreground"
-            />
-          </div>
         </div>
 
         <div>
@@ -120,48 +122,14 @@ export function AdminProductForm({
         </div>
       </div>
 
-      {product?.galleryImages?.length ? (
-        <div>
-          <p className="text-sm font-medium">Existing Gallery Images</p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {product.galleryImages.map((image, index) => (
-              <label
-                key={`${image.assetRef}-${index}`}
-                className="rounded-lg border border-border bg-background p-3 text-sm"
-              >
-                <div className="relative aspect-square overflow-hidden rounded-md">
-                  <Image
-                    src={image.url}
-                    alt={image.alt || 'Product gallery image'}
-                    fill
-                    sizes="160px"
-                    className="object-cover"
-                  />
-                </div>
-                <span className="mt-2 flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    name="galleryImageRefs"
-                    value={image.assetRef ?? ''}
-                    defaultChecked
-                    disabled={!image.assetRef}
-                  />
-                  Keep image
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
       <div className="grid gap-4 sm:grid-cols-3">
         <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm">
           <input name="availability" type="checkbox" defaultChecked={product?.availability !== false} />
           Available
         </label>
         <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm">
-          <input name="featured" type="checkbox" defaultChecked={Boolean(product?.featured)} />
-          Featured
+          <input name="bestSeller" type="checkbox" defaultChecked={Boolean(product?.bestSeller ?? product?.featured)} />
+          Best Seller
         </label>
         <div>
           <label className="text-sm font-medium">Sort Order</label>

@@ -1,5 +1,6 @@
 /** Central image paths — all assets live under public/ */
 export const LOGO = '/logo.png'
+export const LOGO_WHITE = '/logo-white.png'
 
 export const images = {
   logo: LOGO,

@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { Product } from '@/lib/data'
+import { productPriceBirr, productPriceUsd } from '@/lib/pricing'
 
 export type CartItem = Product & { quantity: number }
 
@@ -17,6 +18,8 @@ type CartContextValue = {
   items: CartItem[]
   count: number
   subtotal: number
+  subtotalBirr: number
+  subtotalUsd: number
   lastAdded: number
   addItem: (product: Product, quantity?: number) => void
   removeItem: (id: string) => void
@@ -98,7 +101,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [items],
   )
   const subtotal = useMemo(
-    () => items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+    () => items.reduce((sum, i) => sum + productPriceUsd(i) * i.quantity, 0),
+    [items],
+  )
+  const subtotalBirr = useMemo(
+    () => items.reduce((sum, i) => sum + productPriceBirr(i) * i.quantity, 0),
+    [items],
+  )
+  const subtotalUsd = useMemo(
+    () => items.reduce((sum, i) => sum + productPriceUsd(i) * i.quantity, 0),
     [items],
   )
 
@@ -107,6 +118,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       items,
       count,
       subtotal,
+      subtotalBirr,
+      subtotalUsd,
       lastAdded,
       addItem,
       removeItem,
@@ -118,6 +131,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       items,
       count,
       subtotal,
+      subtotalBirr,
+      subtotalUsd,
       lastAdded,
       addItem,
       removeItem,

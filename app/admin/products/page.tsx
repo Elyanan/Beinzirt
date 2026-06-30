@@ -1,13 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Eye, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { deleteProductAction } from '@/app/admin/actions'
+import { AdminProductFilters } from '@/components/admin-product-filters'
+import { ConfirmActionForm } from '@/components/confirm-action-form'
 import { IMAGE_FALLBACK } from '@/lib/images'
 import { getAdminProducts, getCategories } from '@/lib/sanity'
-
-function money(value: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
-}
+import { formatDualPrice } from '@/lib/pricing'
 
 export default async function AdminProductsPage({
   searchParams,
@@ -46,30 +45,11 @@ export default async function AdminProductsPage({
         </Link>
       </div>
 
-      <form className="grid gap-3 rounded-xl border border-border/80 bg-card p-4 shadow-luxury sm:grid-cols-[1fr_220px_auto]">
-        <input
-          name="q"
-          defaultValue={params.q ?? ''}
-          placeholder="Search products..."
-          className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-        />
-        <select
-          name="category"
-          defaultValue={category}
-          className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-        >
-          <option>All</option>
-          {categories.map((item) => (
-            <option key={item.id}>{item.title}</option>
-          ))}
-        </select>
-        <button
-          type="submit"
-          className="rounded-full border border-border px-5 text-sm font-medium hover:bg-muted"
-        >
-          Filter
-        </button>
-      </form>
+      <AdminProductFilters
+        categories={categories}
+        query={params.q ?? ''}
+        category={category}
+      />
 
       <div className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-luxury">
         <div className="overflow-x-auto">
@@ -79,7 +59,7 @@ export default async function AdminProductsPage({
                 <th className="px-4 py-3">Product</th>
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Price</th>
-                <th className="px-4 py-3">Featured</th>
+                <th className="px-4 py-3">Best Seller</th>
                 <th className="px-4 py-3">Available</th>
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
@@ -107,18 +87,13 @@ export default async function AdminProductsPage({
                     </div>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{product.category}</td>
-                  <td className="px-4 py-3 font-medium">{money(product.price)}</td>
-                  <td className="px-4 py-3">{product.featured ? 'Yes' : 'No'}</td>
+                  <td className="px-4 py-3 font-medium">{formatDualPrice(product)}</td>
+                  <td className="px-4 py-3">
+                    {(product.bestSeller ?? product.featured) ? 'Yes' : 'No'}
+                  </td>
                   <td className="px-4 py-3">{product.availability !== false ? 'Yes' : 'No'}</td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-2">
-                      <Link
-                        href="/shop"
-                        className="inline-flex size-9 items-center justify-center rounded-full border border-border hover:bg-muted"
-                        aria-label={`Preview ${product.name}`}
-                      >
-                        <Eye className="size-4" />
-                      </Link>
                       <Link
                         href={`/admin/products/${encodeURIComponent(product.id)}/edit`}
                         className="inline-flex size-9 items-center justify-center rounded-full border border-border hover:bg-muted"
@@ -126,8 +101,11 @@ export default async function AdminProductsPage({
                       >
                         <Pencil className="size-4" />
                       </Link>
-                      <form action={deleteProductAction}>
-                        <input type="hidden" name="id" value={product.id} />
+                      <ConfirmActionForm
+                        action={deleteProductAction}
+                        id={product.id}
+                        message={`Delete ${product.name}? This cannot be undone.`}
+                      >
                         <button
                           type="submit"
                           aria-label={`Delete ${product.name}`}
@@ -135,7 +113,7 @@ export default async function AdminProductsPage({
                         >
                           <Trash2 className="size-4" />
                         </button>
-                      </form>
+                      </ConfirmActionForm>
                     </div>
                   </td>
                 </tr>

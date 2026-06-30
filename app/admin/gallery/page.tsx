@@ -1,12 +1,21 @@
 import Image from 'next/image'
 import { Trash2 } from 'lucide-react'
-import { deleteGalleryItemAction, saveGalleryItemAction } from '@/app/admin/actions'
-import { galleryFilters } from '@/lib/data'
+import {
+  deleteGalleryCategoryAction,
+  deleteGalleryItemAction,
+  saveGalleryCategoryAction,
+  saveGalleryItemAction,
+} from '@/app/admin/actions'
+import { ConfirmActionForm } from '@/components/confirm-action-form'
 import { IMAGE_FALLBACK } from '@/lib/images'
-import { getGalleryItems } from '@/lib/sanity'
+import { getGalleryCategories, getGalleryItems } from '@/lib/sanity'
 
 export default async function AdminGalleryPage() {
-  const items = await getGalleryItems()
+  const [items, categories] = await Promise.all([
+    getGalleryItems(),
+    getGalleryCategories({ includeHidden: true }),
+  ])
+  const galleryFilters = ['All', ...categories.filter((item) => !item.hidden).map((item) => item.title)]
 
   return (
     <div className="space-y-6">
@@ -14,6 +23,58 @@ export default async function AdminGalleryPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-accent">Media</p>
         <h1 className="mt-2 font-serif text-3xl">Gallery</h1>
       </div>
+
+      <section className="rounded-xl border border-border/80 bg-card p-5 shadow-luxury">
+        <h2 className="font-serif text-xl">Gallery Categories</h2>
+        <form action={saveGalleryCategoryAction} className="mt-5 grid gap-3 lg:grid-cols-[1fr_140px_auto]">
+          <input
+            name="title"
+            required
+            placeholder="New category"
+            className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+          <input
+            name="sortOrder"
+            type="number"
+            defaultValue={999}
+            className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+          <button
+            type="submit"
+            className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            Add Category
+          </button>
+        </form>
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          {categories.map((category) => (
+            <div key={category.id} className="grid gap-3 rounded-lg border border-border bg-background p-3 sm:grid-cols-[1fr_auto]">
+              <form action={saveGalleryCategoryAction} className="grid gap-3 sm:grid-cols-[1fr_90px_auto]">
+                <input type="hidden" name="id" value={category.id} />
+                <input name="title" defaultValue={category.title} className="h-10 rounded-lg border border-border bg-card px-3 text-sm" />
+                <input name="sortOrder" type="number" defaultValue={category.sortOrder} className="h-10 rounded-lg border border-border bg-card px-3 text-sm" />
+                <label className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 text-sm">
+                  <input type="checkbox" name="hidden" defaultChecked={category.hidden} />
+                  Hidden
+                </label>
+                <button type="submit" className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground sm:col-span-2">
+                  Save
+                </button>
+              </form>
+              <ConfirmActionForm
+                action={deleteGalleryCategoryAction}
+                id={category.id}
+                message={`Delete gallery category ${category.title}?`}
+              >
+                <button type="submit" className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-border px-4 text-sm text-destructive hover:bg-destructive/10">
+                  <Trash2 className="size-4" />
+                  Delete
+                </button>
+              </ConfirmActionForm>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <section className="rounded-xl border border-border/80 bg-card p-5 shadow-luxury">
         <h2 className="font-serif text-xl">Upload Gallery Image</h2>
@@ -147,8 +208,11 @@ export default async function AdminGalleryPage() {
                   Save Changes
                 </button>
               </form>
-              <form action={deleteGalleryItemAction}>
-                <input type="hidden" name="id" value={item.id} />
+              <ConfirmActionForm
+                action={deleteGalleryItemAction}
+                id={item.id}
+                message={`Delete gallery image ${item.title}?`}
+              >
                 <button
                   type="submit"
                   className="inline-flex items-center gap-2 text-sm text-destructive hover:underline"
@@ -156,7 +220,7 @@ export default async function AdminGalleryPage() {
                   <Trash2 className="size-4" />
                   Delete Image
                 </button>
-              </form>
+              </ConfirmActionForm>
             </div>
           </article>
         ))}
