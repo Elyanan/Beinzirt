@@ -6,6 +6,8 @@ import { ContactForm } from '@/components/contact-form'
 import { Reveal } from '@/components/reveal'
 import { SocialLinks } from '@/components/social-links'
 import { getContactContent } from '@/lib/sanity'
+import { getMessages, translate } from '@/lib/i18n/messages'
+import { getServerLocale } from '@/lib/i18n/server'
 
 export const metadata: Metadata = {
   title: 'Contact | Beinzirt Design',
@@ -14,6 +16,8 @@ export const metadata: Metadata = {
 }
 
 export default async function ContactPage() {
+  const locale = await getServerLocale()
+  const t = (key: string) => translate(getMessages(locale), key)
   const contact = await getContactContent()
   const infoCards = [
     { icon: Phone, label: 'Phone Number', value: contact.phone, href: undefined },
@@ -24,11 +28,7 @@ export default async function ContactPage() {
 
   return (
     <>
-      <PageBanner
-        title="Contact Us"
-        subtitle="Have any queries? We're here to answer."
-        image={contact.storeImage}
-      />
+      <PageBanner title={t('contact.title')} subtitle={t('contact.subtitle')} image={contact.storeImage} />
 
       <section className="px-5 py-12 lg:px-8">
         <div className="mx-auto grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -68,7 +68,7 @@ export default async function ContactPage() {
       <section className="bg-secondary/50 px-5 py-16 lg:px-8">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2">
           <Reveal>
-            <h2 className="font-serif text-3xl text-foreground">Send Us a Message</h2>
+            <h2 className="font-serif text-3xl text-foreground">{t('contact.sendMessage')}</h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">
               Whether you have a question about our collection, need styling advice,
               or want to discuss a custom order, we&apos;re happy to help.

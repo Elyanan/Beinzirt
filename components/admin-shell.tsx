@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Box,
   ClipboardList,
@@ -40,6 +40,16 @@ export function AdminShell({
 }) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [navigating, setNavigating] = useState(false)
+
+  useEffect(() => {
+    setNavigating(false)
+  }, [pathname])
+
+  function handleAdminNavigate(href: string) {
+    setMobileOpen(false)
+    if (href !== pathname) setNavigating(true)
+  }
 
   if (pathname === '/admin/login') {
     return <div className="min-h-screen bg-[#f6f1e8]">{children}</div>
@@ -88,6 +98,7 @@ export function AdminShell({
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={() => handleAdminNavigate(link.href)}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-primary-foreground/10 hover:text-primary-foreground',
                   pathname === link.href || pathname.startsWith(`${link.href}/`)
@@ -123,6 +134,15 @@ export function AdminShell({
 
       <div className="lg:pl-72">
         <header className="sticky top-0 z-30 border-b border-border/80 bg-[#f6f1e8]/90 px-5 py-4 backdrop-blur lg:px-8">
+          <div
+            className={cn(
+              'absolute inset-x-0 bottom-0 h-0.5 overflow-hidden transition-opacity duration-200',
+              navigating ? 'opacity-100' : 'opacity-0',
+            )}
+            aria-hidden="true"
+          >
+            <span className="block h-full w-1/3 animate-admin-progress rounded-full bg-accent" />
+          </div>
           <div className="flex items-center justify-between gap-4">
             <div>
               <button
@@ -157,7 +177,7 @@ export function AdminShell({
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={() => setMobileOpen(false)}
+                onClick={() => handleAdminNavigate(link.href)}
                 className={cn(
                   'inline-flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium',
                   pathname === link.href || pathname.startsWith(`${link.href}/`)
@@ -171,7 +191,7 @@ export function AdminShell({
             ))}
           </nav>
         </header>
-        <main className="px-5 py-8 lg:px-8">{children}</main>
+        <main className="px-4 py-6 sm:px-5 sm:py-8 lg:px-8">{children}</main>
       </div>
     </div>
   )

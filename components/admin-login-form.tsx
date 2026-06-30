@@ -1,8 +1,33 @@
 'use client'
 
 import { useState } from 'react'
-import { Eye, EyeOff, LockKeyhole } from 'lucide-react'
+import { useFormStatus } from 'react-dom'
+import { Eye, EyeOff, Loader2, LockKeyhole } from 'lucide-react'
 import { loginAction } from '@/app/admin/actions'
+
+function LoginSubmitButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+    >
+      {pending ? (
+        <>
+          <Loader2 className="size-4 animate-spin" />
+          Signing in...
+        </>
+      ) : (
+        <>
+          <LockKeyhole className="size-4" />
+          Sign In
+        </>
+      )}
+    </button>
+  )
+}
 
 export function AdminLoginForm({ next }: { next: string }) {
   const [showPassword, setShowPassword] = useState(false)
@@ -46,13 +71,7 @@ export function AdminLoginForm({ next }: { next: string }) {
           </button>
         </div>
       </div>
-      <button
-        type="submit"
-        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-      >
-        <LockKeyhole className="size-4" />
-        Sign In
-      </button>
+      <LoginSubmitButton />
     </form>
   )
 }

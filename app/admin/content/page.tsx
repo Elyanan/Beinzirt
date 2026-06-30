@@ -11,6 +11,7 @@ import {
   getFooterContent,
   getHomepageContent,
 } from '@/lib/sanity'
+import { PendingSubmitButton } from '@/components/pending-submit-button'
 
 function ImagePreview({
   src,
@@ -68,7 +69,9 @@ export default async function AdminContentPage() {
           <input name="storyEyebrow" defaultValue={home.storyEyebrow} placeholder="Story eyebrow" className="admin-input" />
           <input name="storyTitle" defaultValue={home.storyTitle} placeholder="Story title" className="admin-input" />
           <textarea name="storyParagraphs" defaultValue={home.storyParagraphs.join('\n')} rows={5} placeholder="One story paragraph per line" className="admin-textarea lg:col-span-2" />
-          <button type="submit" className="admin-submit lg:col-span-2">Save Home Content</button>
+          <PendingSubmitButton pendingLabel="Saving..." className="admin-submit lg:col-span-2">
+            Save Home Content
+          </PendingSubmitButton>
         </form>
       </section>
 
@@ -88,7 +91,9 @@ export default async function AdminContentPage() {
             Story Image
             <input name="storyImage" type="file" accept="image/*" className="admin-file mt-2" />
           </label>
-          <button type="submit" className="admin-submit lg:col-span-2">Save About Content</button>
+          <PendingSubmitButton pendingLabel="Saving..." className="admin-submit lg:col-span-2">
+            Save About Content
+          </PendingSubmitButton>
         </form>
       </section>
 
@@ -108,7 +113,9 @@ export default async function AdminContentPage() {
           <input name="storeImage" type="file" accept="image/*" className="admin-file" />
           <textarea name="address" defaultValue={contact.address} rows={3} placeholder="Address" className="admin-textarea lg:col-span-2" />
           <textarea name="mapIframe" defaultValue={contact.mapIframe} rows={4} placeholder="Google Maps iframe src" className="admin-textarea lg:col-span-2" />
-          <button type="submit" className="admin-submit lg:col-span-2">Save Contact Content</button>
+          <PendingSubmitButton pendingLabel="Saving..." className="admin-submit lg:col-span-2">
+            Save Contact Content
+          </PendingSubmitButton>
         </form>
       </section>
 
@@ -123,7 +130,9 @@ export default async function AdminContentPage() {
           <ImagePreview src={footer.logo} alt="Current footer logo" deleteName="deleteLogo" />
           <input name="logo" type="file" accept="image/*" className="admin-file" />
           <textarea name="location" defaultValue={footer.contactInfo.location} rows={3} placeholder="Location" className="admin-textarea lg:col-span-2" />
-          <button type="submit" className="admin-submit lg:col-span-2">Save Footer Content</button>
+          <PendingSubmitButton pendingLabel="Saving..." className="admin-submit lg:col-span-2">
+            Save Footer Content
+          </PendingSubmitButton>
         </form>
       </section>
     </div>

@@ -7,6 +7,7 @@ import {
   saveGalleryItemAction,
 } from '@/app/admin/actions'
 import { ConfirmActionForm } from '@/components/confirm-action-form'
+import { PendingSubmitButton } from '@/components/pending-submit-button'
 import { IMAGE_FALLBACK } from '@/lib/images'
 import { getGalleryCategories, getGalleryItems } from '@/lib/sanity'
 
@@ -39,12 +40,12 @@ export default async function AdminGalleryPage() {
             defaultValue={999}
             className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
-          <button
-            type="submit"
+          <PendingSubmitButton
+            pendingLabel="Adding..."
             className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
           >
             Add Category
-          </button>
+          </PendingSubmitButton>
         </form>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           {categories.map((category) => (
@@ -57,9 +58,9 @@ export default async function AdminGalleryPage() {
                   <input type="checkbox" name="hidden" defaultChecked={category.hidden} />
                   Hidden
                 </label>
-                <button type="submit" className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground sm:col-span-2">
+                <PendingSubmitButton pendingLabel="Saving..." className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground sm:col-span-2">
                   Save
-                </button>
+                </PendingSubmitButton>
               </form>
               <ConfirmActionForm
                 action={deleteGalleryCategoryAction}
@@ -127,12 +128,12 @@ export default async function AdminGalleryPage() {
             required
             className="block w-full rounded-lg border border-border bg-background px-4 py-3 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:text-primary-foreground"
           />
-          <button
-            type="submit"
+          <PendingSubmitButton
+            pendingLabel="Saving..."
             className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 lg:col-span-2"
           >
             Save Gallery Image
-          </button>
+          </PendingSubmitButton>
         </form>
       </section>
 
@@ -201,12 +202,12 @@ export default async function AdminGalleryPage() {
                   accept="image/*"
                   className="block w-full rounded-lg border border-border bg-background px-3 py-2 text-xs file:mr-3 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:text-primary-foreground"
                 />
-                <button
-                  type="submit"
+                <PendingSubmitButton
+                  pendingLabel="Saving..."
                   className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
                 >
                   Save Changes
-                </button>
+                </PendingSubmitButton>
               </form>
               <ConfirmActionForm
                 action={deleteGalleryItemAction}

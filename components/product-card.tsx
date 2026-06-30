@@ -5,17 +5,22 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Eye, Minus, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/components/language-provider'
 import { useCart } from '@/components/cart-context'
 import type { Product } from '@/lib/data'
 import { IMAGE_FALLBACK } from '@/lib/images'
 import { formatDualPrice } from '@/lib/pricing'
+import { cn } from '@/lib/utils'
 
 export function ProductCard({ product }: { product: Product }) {
+  const { t } = useTranslation()
   const { addItem, updateQuantity, getItemQuantity } = useCart()
   const [open, setOpen] = useState(false)
   const quantity = getItemQuantity(product.id)
+  const unavailable = product.availability === false
 
   function handleAdd() {
+    if (unavailable) return
     addItem(product)
   }
 
@@ -25,9 +30,14 @@ export function ProductCard({ product }: { product: Product }) {
         <Button
           size={compact ? 'sm' : 'lg'}
           onClick={handleAdd}
-          className="rounded-full bg-primary px-3.5 text-primary-foreground hover:bg-primary/90"
+          disabled={unavailable}
+          className="rounded-full bg-primary px-3.5 text-primary-foreground hover:bg-primary/90 disabled:bg-foreground/25"
         >
-          <Plus className="size-3.5" /> Add to Cart
+          {unavailable ? t('product.outOfStock') : (
+            <>
+              <Plus className="size-3.5" /> {t('product.addToCart')}
+            </>
+          )}
         </Button>
       )
     }
@@ -37,7 +47,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="flex items-center rounded-full border border-border bg-background shadow-sm">
           <button
             type="button"
-            aria-label={`Decrease ${product.name} quantity`}
+            aria-label={t('product.decreaseQty')}
             onClick={() => updateQuantity(product.id, quantity - 1)}
             className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary"
           >
@@ -46,9 +56,10 @@ export function ProductCard({ product }: { product: Product }) {
           <span className="min-w-9 text-center text-sm font-semibold">{quantity}</span>
           <button
             type="button"
-            aria-label={`Increase ${product.name} quantity`}
+            aria-label={t('product.increaseQty')}
             onClick={() => updateQuantity(product.id, quantity + 1)}
-            className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary"
+            disabled={unavailable}
+            className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary disabled:cursor-not-allowed disabled:text-muted-foreground/50"
           >
             <Plus className="size-3.5" />
           </button>
@@ -59,7 +70,7 @@ export function ProductCard({ product }: { product: Product }) {
           variant="outline"
           className="rounded-full border-foreground/20 px-3.5"
         >
-          <Link href="/cart">View Cart</Link>
+          <Link href="/cart">{t('product.viewCart')}</Link>
         </Button>
       </div>
     )
@@ -81,8 +92,18 @@ export function ProductCard({ product }: { product: Product }) {
             {product.category}
           </span>
           {(product.bestSeller ?? product.featured) && (
-            <span className="absolute right-3 top-3 rounded-full bg-accent px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-accent-foreground shadow-sm">
-              Best Seller
+            <span className="absolute right-3 top-3 rounded-full border border-[#f4d58a]/45 bg-[#2f281f]/95 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-[#f4d58a] shadow-lg backdrop-blur">
+              {t('product.bestSeller')}
+            </span>
+          )}
+          {unavailable && (
+            <span
+              className={cn(
+                'absolute right-3 rounded-full border border-background/25 bg-foreground/85 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-background shadow-lg backdrop-blur',
+                (product.bestSeller ?? product.featured) ? 'top-12' : 'top-3',
+              )}
+            >
+              {t('product.outOfStock')}
             </span>
           )}
           <button
@@ -90,7 +111,7 @@ export function ProductCard({ product }: { product: Product }) {
             onClick={() => setOpen(true)}
             className="absolute bottom-3 left-1/2 flex -translate-x-1/2 translate-y-4 items-center gap-1.5 rounded-full bg-background px-4 py-2 text-xs font-medium text-foreground opacity-0 shadow-lg transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100"
           >
-            <Eye className="size-3.5" /> Quick View
+            <Eye className="size-3.5" /> {t('product.quickView')}
           </button>
         </div>
         <div className="flex flex-1 flex-col p-4">
@@ -98,7 +119,7 @@ export function ProductCard({ product }: { product: Product }) {
           <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
             {product.description}
           </p>
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex items-center justify-between gap-2">
             <span className="font-serif text-base text-primary">{formatDualPrice(product)}</span>
             <QuantityControl compact />
           </div>
@@ -119,7 +140,7 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="animate-fade-up relative grid max-h-[88vh] w-full max-w-3xl overflow-hidden rounded-2xl bg-card shadow-2xl md:grid-cols-2">
             <button
               type="button"
-              aria-label="Close"
+              aria-label={t('common.close')}
               onClick={() => setOpen(false)}
               className="absolute right-3 top-3 z-10 flex size-9 items-center justify-center rounded-full bg-background/85 text-foreground backdrop-blur transition-colors hover:bg-muted"
             >
@@ -138,14 +159,17 @@ export function ProductCard({ product }: { product: Product }) {
               <span className="text-xs font-medium uppercase tracking-[0.2em] text-accent">
                 {product.category}
               </span>
+              {unavailable ? (
+                <span className="w-fit rounded-full border border-foreground/15 bg-foreground/85 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-background">
+                  {t('product.currentlyUnavailable')}
+                </span>
+              ) : null}
               <h2 className="font-serif text-2xl text-foreground">{product.name}</h2>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {product.description}
               </p>
               <p className="font-serif text-2xl text-primary">{formatDualPrice(product)}</p>
-              <p className="text-xs text-muted-foreground">
-                Handwoven to order - Free Addis Ababa delivery over ETB 7,000
-              </p>
+              <p className="text-xs text-muted-foreground">{t('product.handwovenNote')}</p>
               <QuantityControl />
             </div>
           </div>

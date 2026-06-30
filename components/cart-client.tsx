@@ -2,9 +2,10 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { FormEvent, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowRight, CheckCircle2, Loader2, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/components/language-provider'
 import { useCart } from '@/components/cart-context'
 import { IMAGE_FALLBACK } from '@/lib/images'
 import {
@@ -33,11 +34,20 @@ const initialForm: CheckoutForm = {
 }
 
 export function CartClient() {
+  const { t } = useTranslation()
   const { items, subtotalBirr, subtotalUsd, updateQuantity, removeItem, clear } = useCart()
   const [form, setForm] = useState(initialForm)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [successOrderId, setSuccessOrderId] = useState('')
+  const successRef = useRef<HTMLDivElement>(null)
+  const hasUnavailableItems = items.some((item) => item.availability === false)
+
+  useEffect(() => {
+    if (!successOrderId) return
+    successRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    successRef.current?.focus({ preventScroll: true })
+  }, [successOrderId])
 
   const deliveryFeeBirr = deliveryFeeForBirr(subtotalBirr)
   const totalBirr = subtotalBirr + deliveryFeeBirr
@@ -62,7 +72,12 @@ export function CartClient() {
     setError('')
 
     if (!form.customerName || !form.phone || !form.email || !form.address) {
-      setError('Please complete all required checkout fields.')
+      setError(t('cart.requiredFields'))
+      return
+    }
+
+    if (hasUnavailableItems) {
+      setError(t('cart.removeUnavailable'))
       return
     }
 
@@ -84,7 +99,7 @@ export function CartClient() {
       setSuccessOrderId(payload.orderId)
       setForm(initialForm)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to place order.')
+      setError(err instanceof Error ? err.message : t('cart.failed'))
     } finally {
       setSubmitting(false)
     }
@@ -92,23 +107,23 @@ export function CartClient() {
 
   if (successOrderId) {
     return (
-      <div className="mx-auto max-w-2xl px-5 pb-10 pt-32 text-center lg:px-8">
+      <div
+        ref={successRef}
+        tabIndex={-1}
+        className="mx-auto max-w-2xl px-5 pb-10 pt-32 text-center outline-none lg:px-8"
+      >
         <div className="rounded-3xl border border-emerald-300 bg-emerald-50 px-6 py-12 shadow-luxury">
           <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-emerald-600 text-white">
             <CheckCircle2 className="size-8" />
           </div>
-          <h2 className="mt-6 font-serif text-3xl text-emerald-950">
-            Thank you for placing your order!
-          </h2>
-          <p className="mx-auto mt-3 max-w-md leading-relaxed text-emerald-900/80">
-            We have received your order successfully. Our team will contact you shortly to confirm your order.
-          </p>
+          <h2 className="mt-6 font-serif text-3xl text-emerald-950">{t('cart.successTitle')}</h2>
+          <p className="mx-auto mt-3 max-w-md leading-relaxed text-emerald-900/80">{t('cart.successText')}</p>
           <div className="mx-auto mt-6 max-w-xs rounded-2xl border border-emerald-200 bg-white/70 px-5 py-4">
-            <p className="text-xs uppercase tracking-[0.22em] text-emerald-700">Order ID</p>
+            <p className="text-xs uppercase tracking-[0.22em] text-emerald-700">{t('cart.orderId')}</p>
             <p className="mt-1 font-serif text-2xl text-emerald-950">{successOrderId}</p>
           </div>
           <Button asChild className="mt-8 rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-            <Link href="/shop">Continue Shopping</Link>
+            <Link href="/shop">{t('cart.continueShopping')}</Link>
           </Button>
         </div>
       </div>
@@ -121,13 +136,11 @@ export function CartClient() {
         <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
           <ShoppingBag className="size-7" />
         </div>
-        <h2 className="mt-6 font-serif text-2xl text-foreground">Your cart is empty.</h2>
-        <p className="mt-3 leading-relaxed text-muted-foreground">
-          Browse our handcrafted Ethiopian collections.
-        </p>
+        <h2 className="mt-6 font-serif text-2xl text-foreground">{t('cart.emptyTitle')}</h2>
+        <p className="mt-3 leading-relaxed text-muted-foreground">{t('cart.emptyText')}</p>
         <Button asChild className="mt-8 rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
           <Link href="/shop">
-            Continue Shopping <ArrowRight className="size-4" />
+            {t('cart.continueShopping')} <ArrowRight className="size-4" />
           </Link>
         </Button>
       </div>
@@ -157,6 +170,11 @@ export function CartClient() {
                       <p className="text-xs uppercase tracking-wider text-muted-foreground">
                         {item.category}
                       </p>
+                      {item.availability === false ? (
+                        <span className="mt-2 inline-flex rounded-full border border-foreground/15 bg-foreground/85 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-background">
+                          {t('product.outOfStock')}
+                        </span>
+                      ) : null}
                     </div>
                     <button
                       type="button"
@@ -168,7 +186,7 @@ export function CartClient() {
                     </button>
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">
-                    Unit Price:{' '}
+                    {t('cart.unitPrice')}:{' '}
                     <span className="font-medium text-foreground">{formatDualPrice(item)}</span>
                   </p>
                 </div>
@@ -187,7 +205,8 @@ export function CartClient() {
                       type="button"
                       aria-label="Increase quantity"
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary"
+                      disabled={item.availability === false}
+                      className="flex size-9 items-center justify-center text-foreground transition-colors hover:text-primary disabled:cursor-not-allowed disabled:text-muted-foreground/50"
                     >
                       <Plus className="size-3.5" />
                     </button>
@@ -206,7 +225,7 @@ export function CartClient() {
         <div className="mt-4 flex items-center justify-between">
           <Button asChild variant="ghost" className="rounded-full">
             <Link href="/shop">
-              <ArrowRight className="size-4 rotate-180" /> Continue Shopping
+              {t('cart.continueShopping')}
             </Link>
           </Button>
           <button
@@ -214,30 +233,30 @@ export function CartClient() {
             onClick={clear}
             className="text-sm text-muted-foreground transition-colors hover:text-destructive"
           >
-            Clear cart
+            {t('cart.clearCart')}
           </button>
         </div>
       </div>
 
       <aside className="h-fit space-y-6">
         <section className="rounded-2xl border border-border bg-card p-6 shadow-luxury">
-          <h2 className="font-serif text-xl text-foreground">Order Summary</h2>
+          <h2 className="font-serif text-xl text-foreground">{t('cart.orderSummary')}</h2>
           <dl className="mt-5 space-y-3 text-sm">
             <div className="flex justify-between">
-              <dt className="text-muted-foreground">Subtotal</dt>
+              <dt className="text-muted-foreground">{t('cart.subtotal')}</dt>
               <dd className="text-right font-medium text-foreground">
                 {formatBirr(subtotalBirr)}
                 <span className="block text-xs text-muted-foreground">{formatUsd(subtotalUsd)}</span>
               </dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-muted-foreground">Delivery Fee</dt>
+              <dt className="text-muted-foreground">{t('cart.deliveryFee')}</dt>
               <dd className="font-medium text-foreground">
-                {deliveryFeeBirr ? formatBirr(deliveryFeeBirr) : 'Free'}
+                {deliveryFeeBirr ? formatBirr(deliveryFeeBirr) : t('cart.free')}
               </dd>
             </div>
             <div className="flex justify-between border-t border-border pt-3">
-              <dt className="font-serif text-base text-foreground">Grand Total</dt>
+              <dt className="font-serif text-base text-foreground">{t('cart.grandTotal')}</dt>
               <dd className="text-right font-serif text-xl text-primary">
                 {formatBirr(totalBirr)}
                 <span className="block text-xs font-sans text-muted-foreground">
@@ -252,10 +271,10 @@ export function CartClient() {
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-6 shadow-luxury">
-          <h2 className="font-serif text-xl text-foreground">Checkout</h2>
+          <h2 className="font-serif text-xl text-foreground">{t('cart.checkoutTitle')}</h2>
           <form onSubmit={submitOrder} className="mt-5 space-y-4">
             <div>
-              <label className="text-sm font-medium">Full Name *</label>
+              <label className="text-sm font-medium">{t('cart.fullName')} *</label>
               <input
                 required
                 value={form.customerName}
@@ -264,7 +283,7 @@ export function CartClient() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Phone Number *</label>
+              <label className="text-sm font-medium">{t('cart.phone')} *</label>
               <input
                 required
                 value={form.phone}
@@ -273,7 +292,7 @@ export function CartClient() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Email Address *</label>
+              <label className="text-sm font-medium">{t('cart.email')} *</label>
               <input
                 required
                 type="email"
@@ -283,7 +302,7 @@ export function CartClient() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Delivery Address *</label>
+              <label className="text-sm font-medium">{t('cart.address')} *</label>
               <textarea
                 required
                 rows={3}
@@ -293,7 +312,7 @@ export function CartClient() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Optional Notes</label>
+              <label className="text-sm font-medium">{t('cart.optionalNotes')}</label>
               <textarea
                 rows={3}
                 value={form.notes}
@@ -306,18 +325,23 @@ export function CartClient() {
                 {error}
               </p>
             )}
+            {hasUnavailableItems && !error ? (
+              <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {t('cart.unavailableWarning')}
+              </p>
+            ) : null}
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || hasUnavailableItems}
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {submitting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Placing Order...
+                  {t('cart.placingOrder')}
                 </>
               ) : (
-                'Place Order'
+                t('cart.placeOrder')
               )}
             </button>
           </form>

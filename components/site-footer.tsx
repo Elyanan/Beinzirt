@@ -2,10 +2,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Clock, Mail, MapPin, Phone } from 'lucide-react'
 import { SocialLinks } from '@/components/social-links'
-import { getFooterContent } from '@/lib/sanity'
+import { getMessages, translate } from '@/lib/i18n/messages'
+import { getServerLocale } from '@/lib/i18n/server'
+import { getFooterContent, localizedFooter } from '@/lib/sanity'
 
 export async function SiteFooter() {
-  const footer = await getFooterContent()
+  const locale = await getServerLocale()
+  const footer = localizedFooter(await getFooterContent(), locale)
+  const t = (key: string) => translate(getMessages(locale), key)
 
   return (
     <footer className="relative mt-24 bg-primary text-primary-foreground">
@@ -29,18 +33,18 @@ export async function SiteFooter() {
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
-            Collections
+            {t('footer.collections')}
           </h3>
           <ul className="mt-4 space-y-2 text-sm text-primary-foreground/75">
-            <li><Link href="/shop" className="transition-colors hover:text-accent">Dresses</Link></li>
-            <li><Link href="/shop" className="transition-colors hover:text-accent">Scarves</Link></li>
-            <li><Link href="/shop" className="transition-colors hover:text-accent">Custom Orders</Link></li>
+            <li><Link href="/shop" className="transition-colors hover:text-accent">{t('footer.dresses')}</Link></li>
+            <li><Link href="/shop" className="transition-colors hover:text-accent">{t('footer.scarves')}</Link></li>
+            <li><Link href="/custom-order" className="transition-colors hover:text-accent">{t('footer.customOrders')}</Link></li>
           </ul>
         </div>
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
-            Company
+            {t('footer.company')}
           </h3>
           <ul className="mt-4 space-y-2 text-sm text-primary-foreground/75">
             {footer.links.map((link) => (
@@ -54,7 +58,7 @@ export async function SiteFooter() {
           {footer.socialLinks.length ? (
             <>
               <h3 className="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-accent">
-                Social
+                {t('footer.social')}
               </h3>
               <SocialLinks links={footer.socialLinks} variant="dark" className="mt-4" showLabels={false} />
             </>
@@ -63,7 +67,7 @@ export async function SiteFooter() {
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
-            Contact
+            {t('footer.contact')}
           </h3>
           <ul className="mt-4 space-y-3 text-sm text-primary-foreground/75">
             <li className="flex gap-2.5">
@@ -92,7 +96,7 @@ export async function SiteFooter() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-5 py-6 text-center text-xs text-primary-foreground/60 lg:flex-row lg:px-8">
           <p>{footer.copyright}</p>
           <p>
-            Developed by{' '}
+            {t('footer.developedBy')}{' '}
             <a
               href="https://websitecrafters.net"
               className="font-medium text-accent transition-colors hover:text-primary-foreground"

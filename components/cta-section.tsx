@@ -1,7 +1,10 @@
+'use client'
+
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Reveal } from '@/components/reveal'
+import { useTranslation } from '@/components/language-provider'
 
 type CtaSectionProps = {
   title?: string
@@ -12,12 +15,14 @@ type CtaSectionProps = {
 }
 
 export function CtaSection({
-  title = "Can't find the perfect piece?",
-  subtitle = 'Let us create it for you.',
-  description = "Send us a sample design or idea and we'll bring your vision to life. From weddings to everyday wear, we've got you covered.",
-  buttonLabel = 'Start a Custom Order',
+  title,
+  subtitle,
+  description,
+  buttonLabel,
   buttonHref = '/custom-order',
 }: CtaSectionProps) {
+  const { t } = useTranslation()
+
   return (
     <section className="px-5 py-20 lg:px-8">
       <Reveal className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-primary px-6 py-16 text-center text-primary-foreground md:py-20">
@@ -26,14 +31,11 @@ export function CtaSection({
         <div className="pattern-strip absolute inset-x-0 bottom-0 h-1.5" />
         <div className="relative mx-auto max-w-2xl">
           <h2 className="text-balance font-serif text-3xl leading-tight md:text-4xl">
-            {title}
+            {title ?? t('cta.defaultTitle')}
           </h2>
-          {subtitle && (
-            <p className="mt-3 font-serif text-xl text-accent">{subtitle}</p>
-          )}
-          {description && (
+          {(subtitle ?? description) && (
             <p className="mx-auto mt-5 max-w-xl text-pretty leading-relaxed text-primary-foreground/80">
-              {description}
+              {description ?? t('cta.defaultText')}
             </p>
           )}
           <Button
@@ -42,7 +44,7 @@ export function CtaSection({
             className="mt-8 rounded-full bg-accent px-7 text-accent-foreground hover:bg-accent/90"
           >
             <Link href={buttonHref}>
-              {buttonLabel}
+              {buttonLabel ?? t('cta.defaultButton')}
               <ArrowRight className="size-4" />
             </Link>
           </Button>

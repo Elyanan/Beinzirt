@@ -52,7 +52,7 @@ export default async function AdminDashboardPage() {
                 <Wallet className="size-5" />
               </span>
               <div>
-                <p className="text-sm text-muted-foreground">Total Revenue</p>
+                <p className="text-sm text-muted-foreground">Total Revenue (Completed)</p>
                 <p className="font-serif text-2xl text-primary">{formatBirr(stats.orderRevenueBirr)}</p>
                 <p className="text-xs text-muted-foreground">{formatUsd(stats.orderRevenueUsd)}</p>
               </div>

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { PageBanner } from '@/components/page-banner'
 import { ShopClient } from '@/components/shop-client'
+import { getMessages, translate } from '@/lib/i18n/messages'
+import { getServerLocale } from '@/lib/i18n/server'
 import { getCategories, getStorefrontProducts } from '@/lib/sanity'
 
 export const metadata: Metadata = {
@@ -10,6 +12,8 @@ export const metadata: Metadata = {
 }
 
 export default async function ShopPage() {
+  const locale = await getServerLocale()
+  const t = (key: string) => translate(getMessages(locale), key)
   const [products, categories] = await Promise.all([
     getStorefrontProducts(),
     getCategories(),
@@ -17,10 +21,7 @@ export default async function ShopPage() {
 
   return (
     <>
-      <PageBanner
-        title="The Collection"
-        subtitle="Handwoven clothing and textiles, made to order by master artisans in Addis Ababa."
-      />
+      <PageBanner title={t('shop.title')} subtitle={t('shop.subtitle')} />
       <ShopClient products={products} categories={categories} />
     </>
   )

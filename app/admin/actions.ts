@@ -14,7 +14,6 @@ import {
   ensureCategory,
   imageReference,
   sanityMutate,
-  seedRequiredCategories,
   slugify,
   uploadSanityImage,
   type CustomOrderStatus,
@@ -33,7 +32,9 @@ function text(formData: FormData, key: string, fallback = '') {
 }
 
 function numberField(formData: FormData, key: string, fallback = 0) {
-  const value = Number(text(formData, key))
+  const rawValue = text(formData, key)
+  if (!rawValue) return fallback
+  const value = Number(rawValue)
   return Number.isFinite(value) ? value : fallback
 }
 
@@ -84,6 +85,7 @@ export async function saveProductAction(formData: FormData) {
   await assertAdmin()
 
   const name = text(formData, 'name')
+  const nameAm = text(formData, 'nameAm')
   const slug = slugify(text(formData, 'slug', name))
   const id = text(formData, 'id') || `product.${slug}-${Date.now()}`
   const categoryTitle = text(formData, 'category', 'Dresses')
@@ -99,10 +101,12 @@ export async function saveProductAction(formData: FormData) {
         _id: id,
         _type: 'product',
         name,
+        nameAm,
         slug: { _type: 'slug', current: slug },
         category: { _type: 'reference', _ref: categoryId },
         categoryName: categoryTitle,
         description: text(formData, 'description'),
+        descriptionAm: text(formData, 'descriptionAm'),
         price: numberField(formData, 'priceUsd'),
         priceBirr: numberField(formData, 'priceBirr'),
         priceUsd: numberField(formData, 'priceUsd'),
@@ -134,8 +138,10 @@ export async function deleteProductAction(formData: FormData) {
 export async function saveCategoryAction(formData: FormData) {
   await assertAdmin()
   const title = text(formData, 'title')
+  const titleAm = text(formData, 'titleAm')
   const slug = slugify(text(formData, 'slug', title))
   const id = text(formData, 'id') || `category.${slug}`
+  const nextSortOrder = numberField(formData, 'nextSortOrder', 999)
 
   await sanityMutate([
     {
@@ -143,9 +149,11 @@ export async function saveCategoryAction(formData: FormData) {
         _id: id,
         _type: 'category',
         title,
+        titleAm,
         slug: { _type: 'slug', current: slug },
         description: text(formData, 'description'),
-        sortOrder: numberField(formData, 'sortOrder', 999),
+        descriptionAm: text(formData, 'descriptionAm'),
+        sortOrder: numberField(formData, 'sortOrder', nextSortOrder),
         hidden: checkbox(formData, 'hidden'),
         updatedDate: new Date().toISOString(),
       },
@@ -164,16 +172,10 @@ export async function deleteCategoryAction(formData: FormData) {
   revalidatePath('/admin/categories')
 }
 
-export async function seedCategoriesAction() {
-  await assertAdmin()
-  await seedRequiredCategories()
-  revalidatePath('/shop')
-  revalidatePath('/admin/categories')
-}
-
 export async function saveGalleryItemAction(formData: FormData) {
   await assertAdmin()
   const title = text(formData, 'title')
+  const titleAm = text(formData, 'titleAm')
   const id = text(formData, 'id') || `gallery.${slugify(title)}-${Date.now()}`
   const existingImageRef = text(formData, 'existingImageRef')
   const uploadedImage = await uploadImageFromForm(formData, 'image', text(formData, 'alt', title))
@@ -185,7 +187,9 @@ export async function saveGalleryItemAction(formData: FormData) {
         _id: id,
         _type: 'galleryItem',
         title,
+        titleAm,
         caption: text(formData, 'caption'),
+        captionAm: text(formData, 'captionAm'),
         alt: text(formData, 'alt', title),
         category: text(formData, 'category', 'Gallery'),
         filter: text(formData, 'filter', 'All'),
@@ -289,12 +293,23 @@ export async function saveHomepageAction(formData: FormData) {
     'hero.buttonLink': text(formData, 'heroButtonLink'),
     'hero.secondaryButtonText': text(formData, 'heroSecondaryButtonText'),
     'hero.secondaryButtonLink': text(formData, 'heroSecondaryButtonLink'),
+    'heroAm.eyebrow': text(formData, 'heroEyebrowAm'),
+    'heroAm.heading': text(formData, 'heroHeadingAm'),
+    'heroAm.subtitle': text(formData, 'heroSubtitleAm'),
+    'heroAm.buttonText': text(formData, 'heroButtonTextAm'),
+    'heroAm.secondaryButtonText': text(formData, 'heroSecondaryButtonTextAm'),
     heritageEyebrow: text(formData, 'heritageEyebrow'),
+    heritageEyebrowAm: text(formData, 'heritageEyebrowAm'),
     heritageTitle: text(formData, 'heritageTitle'),
+    heritageTitleAm: text(formData, 'heritageTitleAm'),
     heritageText: text(formData, 'heritageText'),
+    heritageTextAm: text(formData, 'heritageTextAm'),
     storyEyebrow: text(formData, 'storyEyebrow'),
+    storyEyebrowAm: text(formData, 'storyEyebrowAm'),
     storyTitle: text(formData, 'storyTitle'),
+    storyTitleAm: text(formData, 'storyTitleAm'),
     storyParagraphs: lines(text(formData, 'storyParagraphs')),
+    storyParagraphsAm: lines(text(formData, 'storyParagraphsAm')),
   }
 
   const heroImage = await uploadImageFromForm(formData, 'heroImage', text(formData, 'heroImageAlt'))
@@ -314,8 +329,11 @@ export async function saveAboutAction(formData: FormData) {
   await assertAdmin()
   const set: Record<string, unknown> = {
     mission: text(formData, 'mission'),
+    missionAm: text(formData, 'missionAm'),
     vision: text(formData, 'vision'),
+    visionAm: text(formData, 'visionAm'),
     storyParagraphs: lines(text(formData, 'storyParagraphs')),
+    storyParagraphsAm: lines(text(formData, 'storyParagraphsAm')),
   }
 
   const bannerImage = await uploadImageFromForm(formData, 'bannerImage', 'About Beinzirt')
@@ -369,7 +387,9 @@ export async function saveFooterAction(formData: FormData) {
   await assertAdmin()
   const set: Record<string, unknown> = {
     description: text(formData, 'description'),
+    descriptionAm: text(formData, 'descriptionAm'),
     copyright: text(formData, 'copyright'),
+    copyrightAm: text(formData, 'copyrightAm'),
     contactInfo: {
       phone: text(formData, 'phone'),
       email: text(formData, 'email'),

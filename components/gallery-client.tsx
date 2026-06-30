@@ -1,9 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useTranslation } from '@/components/language-provider'
 import { cn } from '@/lib/utils'
 import type { GalleryItem } from '@/lib/data'
+import { localizedGalleryItem } from '@/lib/sanity'
 import { Reveal } from '@/components/reveal'
 
 function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
@@ -41,45 +43,62 @@ function GalleryCard({ item, index }: { item: GalleryItem; index: number }) {
 }
 
 export function GalleryClient({ items, filters }: { items: GalleryItem[]; filters: string[] }) {
+  const { t, locale } = useTranslation()
   const [active, setActive] = useState('All')
 
+  const localizedItems = useMemo(
+    () => items.map((item) => localizedGalleryItem(item, locale)),
+    [items, locale],
+  )
+
+  const localizedFilters = useMemo(
+    () => filters.map((filter) => (filter === 'All' ? t('gallery.all') : filter)),
+    [filters, t],
+  )
+
+  const filterMap = useMemo(
+    () => Object.fromEntries(filters.map((filter, index) => [localizedFilters[index], filter])),
+    [filters, localizedFilters],
+  )
+
   const filtered =
-    active === 'All'
-      ? items
-      : items.filter((item) => item.filter === active)
+    active === 'All' || active === t('gallery.all')
+      ? localizedItems
+      : localizedItems.filter((item) => item.filter === filterMap[active] || item.filter === active)
 
   return (
     <>
       <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-2 px-5 lg:px-8">
-        {filters.map((filter) => (
-          <button
-            key={filter}
-            type="button"
-            onClick={() => setActive(filter)}
-            className={cn(
-              'rounded-full border px-4 py-2 text-sm font-medium transition-all duration-300',
-              active === filter
-                ? 'border-accent bg-accent text-accent-foreground shadow-sm'
-                : 'border-border bg-card text-muted-foreground hover:border-accent/50 hover:text-foreground',
-            )}
-          >
-            {filter}
-          </button>
-        ))}
+        {localizedFilters.map((filter, index) => {
+          const raw = filters[index]
+          return (
+            <button
+              key={raw}
+              type="button"
+              onClick={() => setActive(raw)}
+              className={cn(
+                'rounded-full border px-4 py-2 text-sm font-medium transition-all duration-300',
+                active === raw
+                  ? 'border-accent bg-accent text-accent-foreground shadow-sm'
+                  : 'border-border bg-card text-muted-foreground hover:border-accent/50 hover:text-foreground',
+              )}
+            >
+              {filter}
+            </button>
+          )
+        })}
       </div>
 
       {filtered.length ? (
         <div className="mx-auto mt-10 grid max-w-7xl auto-rows-min grid-cols-1 gap-4 px-5 sm:grid-cols-2 lg:grid-cols-3 lg:px-8">
-          {filtered.map((item, i) => (
-            <GalleryCard key={item.id} item={item} index={i} />
+          {filtered.map((item, index) => (
+            <GalleryCard key={item.id} item={item} index={index} />
           ))}
         </div>
       ) : (
         <div className="mx-auto mt-10 max-w-lg rounded-2xl border border-border bg-card px-6 py-10 text-center shadow-luxury">
-          <h2 className="font-serif text-2xl text-foreground">No gallery images yet</h2>
-          <p className="mt-3 text-muted-foreground">
-            This gallery filter is ready for new images from the admin dashboard.
-          </p>
+          <h2 className="font-serif text-2xl text-foreground">{t('shop.emptyTitle')}</h2>
+          <p className="mt-3 text-muted-foreground">{t('shop.emptyText')}</p>
         </div>
       )}
     </>

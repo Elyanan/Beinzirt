@@ -66,6 +66,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [hydrated, items])
 
   const addItem = useCallback((product: Product, quantity = 1) => {
+    if (product.availability === false) return
     setItems((prev) => {
       const existing = prev.find((i) => i.id === product.id)
       if (existing) {
@@ -85,7 +86,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const updateQuantity = useCallback((id: string, quantity: number) => {
     setItems((prev) =>
       prev
-        .map((i) => (i.id === id ? { ...i, quantity: Math.max(0, quantity) } : i))
+        .map((i) => {
+          if (i.id !== id) return i
+          const nextQuantity = Math.max(0, quantity)
+          if (i.availability === false && nextQuantity > i.quantity) return i
+          return { ...i, quantity: nextQuantity }
+        })
         .filter((i) => i.quantity > 0),
     )
   }, [])

@@ -1,3 +1,5 @@
+import { localize, localizeArray } from '@/lib/i18n/localize'
+import type { Locale } from '@/lib/i18n/config'
 import {
   GOOGLE_MAPS_EMBED,
   aboutParagraphs,
@@ -25,8 +27,10 @@ export const storefrontCategoryNames = ['Dresses', 'Scarves']
 export type CmsCategory = {
   id: string
   title: string
+  titleAm?: string
   slug: string
   description?: string
+  descriptionAm?: string
   sortOrder: number
   hidden: boolean
   createdAt?: string
@@ -40,6 +44,8 @@ export type CmsImage = {
 }
 
 export type ProductAdmin = Product & {
+  nameAm?: string
+  descriptionAm?: string
   imageAlt?: string
   imageRef?: string
   galleryImages?: CmsImage[]
@@ -55,6 +61,11 @@ export type SiteHero = {
   secondaryButtonLink: string
   image: string
   imageAlt: string
+  eyebrowAm?: string
+  headingAm?: string
+  subtitleAm?: string
+  buttonTextAm?: string
+  secondaryButtonTextAm?: string
 }
 
 export type HomepageContent = {
@@ -62,13 +73,19 @@ export type HomepageContent = {
   heritageTitle: string
   heritageEyebrow: string
   heritageText: string
+  heritageTitleAm?: string
+  heritageEyebrowAm?: string
+  heritageTextAm?: string
   heritageImage: string
   storyTitle: string
   storyEyebrow: string
   storyParagraphs: string[]
+  storyTitleAm?: string
+  storyEyebrowAm?: string
+  storyParagraphsAm?: string[]
   storyImage: string
-  features: { title: string; text: string }[]
-  featuredSections: { title: string; text: string; image: string }[]
+  features: { title: string; text: string; titleAm?: string; textAm?: string }[]
+  featuredSections: { title: string; text: string; image: string; titleAm?: string; textAm?: string }[]
   useCases: typeof useCases
   videoImage: string
 }
@@ -78,8 +95,11 @@ export type AboutContent = {
   storyImage: string
   mission: string
   vision: string
+  missionAm?: string
+  visionAm?: string
   storyParagraphs: string[]
-  values: typeof aboutValues
+  storyParagraphsAm?: string[]
+  values: { title: string; description: string; titleAm?: string; descriptionAm?: string }[]
 }
 
 export type ContactContent = {
@@ -95,8 +115,10 @@ export type ContactContent = {
 export type FooterContent = {
   logo: string
   description: string
+  descriptionAm?: string
   copyright: string
-  links: { label: string; href: string }[]
+  copyrightAm?: string
+  links: { label: string; href: string; labelAm?: string }[]
   socialLinks: { label: string; href: string }[]
   contactInfo: {
     phone: string
@@ -120,7 +142,7 @@ export type OrderLineItem = {
   image?: string
 }
 
-export type OrderStatus = 'Pending' | 'Confirmed' | 'Delivered'
+export type OrderStatus = 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled'
 
 export type CustomerOrder = {
   id: string
@@ -141,7 +163,7 @@ export type CustomerOrder = {
   status: OrderStatus
 }
 
-export type CustomOrderStatus = 'Pending' | 'Confirmed' | 'Delivered'
+export type CustomOrderStatus = 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled'
 
 export type CustomOrder = {
   id: string
@@ -155,6 +177,7 @@ export type CustomOrder = {
   size?: string
   deadline?: string
   message: string
+  sampleImages: CmsImage[]
   timestamp: string
   status: CustomOrderStatus
 }
@@ -168,8 +191,8 @@ export type DashboardStats = {
   totalCustomOrders: number
   orderRevenueBirr: number
   orderRevenueUsd: number
-  monthlyRevenue: { label: string; totalBirr: number; totalUsd: number }[]
-  yearlyRevenue: { label: string; totalBirr: number; totalUsd: number }[]
+  monthlyRevenue: { label: string; totalBirr: number; totalUsd: number; orderCount: number }[]
+  yearlyRevenue: { label: string; totalBirr: number; totalUsd: number; orderCount: number }[]
   statusCounts: { status: OrderStatus; count: number }[]
 }
 
@@ -295,8 +318,10 @@ function normalizeCategory(item: any, index = 0): CmsCategory {
   return {
     id: item?._id ?? `category.${slugify(title)}`,
     title,
+    titleAm: item?.titleAm ?? '',
     slug: item?.slug?.current ?? item?.slug ?? slugify(title),
     description: item?.description ?? '',
+    descriptionAm: item?.descriptionAm ?? '',
     sortOrder: Number(item?.sortOrder ?? index + 1),
     hidden: Boolean(item?.hidden),
     createdAt: item?._createdAt,
@@ -361,6 +386,7 @@ function normalizeProduct(item: any): ProductAdmin {
     id: item?._id ?? item?.id ?? slugify(item?.name ?? 'product'),
     slug: item?.slug?.current ?? item?.slug ?? slugify(item?.name ?? 'product'),
     name: item?.name ?? 'Untitled product',
+    nameAm: item?.nameAm ?? '',
     category,
     price: priceUsd,
     priceBirr,
@@ -371,6 +397,7 @@ function normalizeProduct(item: any): ProductAdmin {
     images: images.map((image) => image.url),
     galleryImages: images,
     description: item?.description ?? '',
+    descriptionAm: item?.descriptionAm ?? '',
     availability: item?.availability !== false,
     bestSeller,
     featured: bestSeller,
@@ -387,7 +414,9 @@ function normalizeGalleryItem(item: any, index = 0): GalleryItem {
     filter: (item?.filter ?? 'All') as GalleryFilter,
     category: item?.category ?? item?.filter ?? 'Gallery',
     title: item?.title ?? 'Gallery image',
+    titleAm: item?.titleAm ?? '',
     caption: item?.caption ?? '',
+    captionAm: item?.captionAm ?? '',
     alt: item?.alt ?? item?.title ?? 'Beinzirt gallery image',
     imageRef: item?.imageRef,
     tall: Boolean(item?.tall),
@@ -426,7 +455,7 @@ function normalizeOrder(item: any): CustomerOrder {
   const totalBirr = Number(item?.totalBirr ?? item?.total ?? subtotalBirr + deliveryFeeBirr)
   const totalUsd = Number(item?.totalUsd ?? item?.total ?? subtotalUsd)
   const rawStatus = item?.status ?? 'Pending'
-  const status = rawStatus === 'Completed' ? 'Delivered' : rawStatus === 'Cancelled' ? 'Pending' : rawStatus
+  const status = rawStatus === 'Delivered' ? 'Completed' : rawStatus
 
   return {
     id: item?._id ?? item?.id ?? '',
@@ -450,7 +479,7 @@ function normalizeOrder(item: any): CustomerOrder {
 
 function normalizeCustomOrder(item: any): CustomOrder {
   const rawStatus = item?.status ?? 'Pending'
-  const status = rawStatus === 'Completed' ? 'Delivered' : rawStatus === 'Cancelled' ? 'Pending' : rawStatus
+  const status = rawStatus === 'Delivered' ? 'Completed' : rawStatus
   return {
     id: item?._id ?? item?.id ?? '',
     requestId: item?.requestId ?? item?._id ?? '',
@@ -463,6 +492,9 @@ function normalizeCustomOrder(item: any): CustomOrder {
     size: item?.size ?? '',
     deadline: item?.deadline ?? '',
     message: item?.message ?? '',
+    sampleImages: Array.isArray(item?.sampleImages)
+      ? item.sampleImages.map(normalizeImage).filter(Boolean) as CmsImage[]
+      : [],
     timestamp: item?.timestamp ?? item?._createdAt ?? new Date().toISOString(),
     status: status as CustomOrderStatus,
   }
@@ -488,7 +520,7 @@ function mergeSocialLinks(links?: { label: string; href: string }[]) {
 
 export async function getCategories(options?: { includeHidden?: boolean }) {
   const query = `*[_type == "category"] | order(sortOrder asc, title asc) {
-    _id, title, slug, description, sortOrder, hidden, _createdAt, _updatedAt
+    _id, title, titleAm, slug, description, descriptionAm, sortOrder, hidden, _createdAt, _updatedAt
   }`
   const docs = await sanityQuery<any[]>(query, undefined, { cache: 'no-store' })
   const categories = docs?.length ? docs.map(normalizeCategory) : fallbackCategories()
@@ -505,8 +537,8 @@ export async function getGalleryCategories(options?: { includeHidden?: boolean }
 }
 
 export async function getStorefrontProducts() {
-  const query = `*[_type == "product" && availability != false && coalesce(category->title, categoryName) in ["Dresses", "Scarves"]] | order(sortOrder asc, _createdAt desc) {
-    _id, name, slug, description, price, priceBirr, priceUsd, availability, featured, bestSeller, sortOrder, _createdAt, _updatedAt,
+  const query = `*[_type == "product" && coalesce(category->title, categoryName) in ["Dresses", "Scarves"]] | order(sortOrder asc, _createdAt desc) {
+    _id, name, nameAm, slug, description, descriptionAm, price, priceBirr, priceUsd, availability, featured, bestSeller, sortOrder, _createdAt, _updatedAt,
     "category": coalesce(category->title, categoryName),
     "image": featuredImage.asset->url,
     "imageAlt": featuredImage.alt,
@@ -517,13 +549,12 @@ export async function getStorefrontProducts() {
   const products = docs?.length ? docs.map(normalizeProduct) : fallbackProducts.map(normalizeProduct)
   return products
     .filter((item) => storefrontCategoryNames.includes(item.category))
-    .filter((item) => item.availability !== false)
     .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999))
 }
 
 export async function getAdminProducts() {
   const query = `*[_type == "product"] | order(sortOrder asc, _createdAt desc) {
-    _id, name, slug, description, price, priceBirr, priceUsd, availability, featured, bestSeller, sortOrder, _createdAt, _updatedAt,
+    _id, name, nameAm, slug, description, descriptionAm, price, priceBirr, priceUsd, availability, featured, bestSeller, sortOrder, _createdAt, _updatedAt,
     "category": coalesce(category->title, categoryName),
     "image": featuredImage.asset->url,
     "imageAlt": featuredImage.alt,
@@ -536,7 +567,7 @@ export async function getAdminProducts() {
 
 export async function getProductById(id: string) {
   const query = `*[_type == "product" && _id == $id][0] {
-    _id, name, slug, description, price, priceBirr, priceUsd, availability, featured, bestSeller, sortOrder, _createdAt, _updatedAt,
+    _id, name, nameAm, slug, description, descriptionAm, price, priceBirr, priceUsd, availability, featured, bestSeller, sortOrder, _createdAt, _updatedAt,
     "category": coalesce(category->title, categoryName),
     "image": featuredImage.asset->url,
     "imageAlt": featuredImage.alt,
@@ -549,7 +580,7 @@ export async function getProductById(id: string) {
 
 export async function getGalleryItems() {
   const query = `*[_type == "galleryItem"] | order(sortOrder asc, _createdAt desc) {
-    _id, title, caption, alt, category, filter, tall, sortOrder,
+    _id, title, titleAm, caption, captionAm, alt, category, filter, tall, sortOrder,
     "image": image.asset->url,
     "imageRef": image.asset._ref
   }`
@@ -608,10 +639,13 @@ export async function getHomepageContent(): Promise<HomepageContent> {
       eyebrow, heading, subtitle, buttonText, buttonLink, secondaryButtonText, secondaryButtonLink,
       "image": image.asset->url, "imageAlt": image.alt
     },
-    heritageTitle, heritageEyebrow, heritageText, "heritageImage": heritageImage.asset->url,
-    storyTitle, storyEyebrow, storyParagraphs, "storyImage": storyImage.asset->url,
-    features[]{title, text},
-    featuredSections[]{title, text, "image": image.asset->url},
+    heroAm{ eyebrow, heading, subtitle, buttonText, secondaryButtonText },
+    heritageTitle, heritageEyebrow, heritageText, heritageTitleAm, heritageEyebrowAm, heritageTextAm,
+    "heritageImage": heritageImage.asset->url,
+    storyTitle, storyEyebrow, storyParagraphs, storyTitleAm, storyEyebrowAm, storyParagraphsAm,
+    "storyImage": storyImage.asset->url,
+    features[]{title, titleAm, text, textAm},
+    featuredSections[]{title, titleAm, text, textAm, "image": image.asset->url},
     "videoImage": videoImage.asset->url
   }`
   const doc = await sanityQuery<any>(query)
@@ -623,6 +657,11 @@ export async function getHomepageContent(): Promise<HomepageContent> {
     hero: {
       ...fallbackHomepage.hero,
       ...(doc.hero ?? {}),
+      eyebrowAm: doc.heroAm?.eyebrow ?? '',
+      headingAm: doc.heroAm?.heading ?? '',
+      subtitleAm: doc.heroAm?.subtitle ?? '',
+      buttonTextAm: doc.heroAm?.buttonText ?? '',
+      secondaryButtonTextAm: doc.heroAm?.secondaryButtonText ?? '',
       image: doc.hero?.image ?? fallbackHomepage.hero.image,
       imageAlt: doc.hero?.imageAlt ?? fallbackHomepage.hero.imageAlt,
     },
@@ -650,7 +689,8 @@ export const fallbackAbout: AboutContent = {
 
 export async function getAboutContent(): Promise<AboutContent> {
   const query = `*[_type == "aboutPage"][0] {
-    mission, vision, storyParagraphs, values[]{title, description},
+    mission, missionAm, vision, visionAm, storyParagraphs, storyParagraphsAm,
+    values[]{title, titleAm, description, descriptionAm},
     "bannerImage": bannerImage.asset->url,
     "storyImage": storyImage.asset->url
   }`
@@ -713,7 +753,7 @@ export const fallbackFooter: FooterContent = {
 
 export async function getFooterContent(): Promise<FooterContent> {
   const query = `*[_type == "footer"][0] {
-    description, copyright, links[]{label, href}, socialLinks[]{label, href},
+    description, descriptionAm, copyright, copyrightAm, links[]{label, labelAm, href}, socialLinks[]{label, href},
     contactInfo{phone, email, location, hours},
     "logo": logo.asset->url
   }`
@@ -739,7 +779,8 @@ export async function getOrders() {
 
 export async function getCustomOrders() {
   const query = `*[_type == "customOrder"] | order(timestamp desc) {
-    _id, requestId, name, phone, email, productType, occasion, colors, size, deadline, message, timestamp, status
+    _id, requestId, name, phone, email, productType, occasion, colors, size, deadline, message, timestamp, status,
+    "sampleImages": sampleImages[]{ "url": asset->url, "alt": alt, "assetRef": asset._ref }
   }`
   const docs = await sanityQuery<any[]>(query, undefined, { cache: 'no-store' })
   return docs?.map(normalizeCustomOrder) ?? []
@@ -762,7 +803,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     const fallbackStatusCounts: DashboardStats['statusCounts'] = [
       { status: 'Pending', count: 0 },
       { status: 'Confirmed', count: 0 },
-      { status: 'Delivered', count: 0 },
+      { status: 'Completed', count: 0 },
+      { status: 'Cancelled', count: 0 },
     ]
     return {
       totalProducts: fallbackProducts.length,
@@ -779,6 +821,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     }
   }
   const orders = (doc.orders ?? []).map(normalizeOrder)
+  const completedOrders = orders.filter((order: CustomerOrder) => order.status === 'Completed')
 
   return {
     totalProducts: Number(doc.totalProducts ?? 0),
@@ -787,11 +830,11 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     websiteImages: Number(doc.websiteImages ?? 0),
     totalOrders: Number(doc.totalOrders ?? 0),
     totalCustomOrders: Number(doc.totalCustomOrders ?? 0),
-    orderRevenueBirr: orders.reduce((sum: number, order: CustomerOrder) => sum + order.totalBirr, 0),
-    orderRevenueUsd: orders.reduce((sum: number, order: CustomerOrder) => sum + order.totalUsd, 0),
-    monthlyRevenue: buildMonthlyRevenue(orders),
-    yearlyRevenue: buildYearlyRevenue(orders),
-    statusCounts: (['Pending', 'Confirmed', 'Delivered'] as OrderStatus[]).map((status) => ({
+    orderRevenueBirr: completedOrders.reduce((sum: number, order: CustomerOrder) => sum + order.totalBirr, 0),
+    orderRevenueUsd: completedOrders.reduce((sum: number, order: CustomerOrder) => sum + order.totalUsd, 0),
+    monthlyRevenue: buildMonthlyRevenue(completedOrders),
+    yearlyRevenue: buildYearlyRevenue(completedOrders),
+    statusCounts: (['Pending', 'Confirmed', 'Completed', 'Cancelled'] as OrderStatus[]).map((status) => ({
       status,
       count: orders.filter((order: CustomerOrder) => order.status === status).length,
     })),
@@ -812,6 +855,7 @@ function buildMonthlyRevenue(orders: CustomerOrder[]) {
       label: formatter.format(date),
       totalBirr: matching.reduce((sum, order) => sum + order.totalBirr, 0),
       totalUsd: matching.reduce((sum, order) => sum + order.totalUsd, 0),
+      orderCount: matching.length,
     }
   })
 }
@@ -825,8 +869,93 @@ function buildYearlyRevenue(orders: CustomerOrder[]) {
       label: String(year),
       totalBirr: matching.reduce((sum, order) => sum + order.totalBirr, 0),
       totalUsd: matching.reduce((sum, order) => sum + order.totalUsd, 0),
+      orderCount: matching.length,
     }
   })
+}
+
+export function localizedProduct<T extends ProductAdmin>(product: T, locale: Locale): T {
+  return {
+    ...product,
+    name: localize(product.name, product.nameAm, locale),
+    description: localize(product.description, product.descriptionAm, locale),
+  }
+}
+
+export function localizedCategory(category: CmsCategory, locale: Locale): CmsCategory {
+  return {
+    ...category,
+    title: localize(category.title, category.titleAm, locale),
+    description: localize(category.description, category.descriptionAm, locale),
+  }
+}
+
+export function localizedGalleryItem(item: GalleryItem, locale: Locale): GalleryItem {
+  return {
+    ...item,
+    title: localize(item.title, item.titleAm, locale),
+    caption: localize(item.caption, item.captionAm, locale),
+  }
+}
+
+export function localizedHomepage(content: HomepageContent, locale: Locale): HomepageContent {
+  return {
+    ...content,
+    hero: {
+      ...content.hero,
+      eyebrow: localize(content.hero.eyebrow, content.hero.eyebrowAm, locale),
+      heading: localize(content.hero.heading, content.hero.headingAm, locale),
+      subtitle: localize(content.hero.subtitle, content.hero.subtitleAm, locale),
+      buttonText: localize(content.hero.buttonText, content.hero.buttonTextAm, locale),
+      secondaryButtonText: localize(
+        content.hero.secondaryButtonText,
+        content.hero.secondaryButtonTextAm,
+        locale,
+      ),
+    },
+    heritageEyebrow: localize(content.heritageEyebrow, content.heritageEyebrowAm, locale),
+    heritageTitle: localize(content.heritageTitle, content.heritageTitleAm, locale),
+    heritageText: localize(content.heritageText, content.heritageTextAm, locale),
+    storyEyebrow: localize(content.storyEyebrow, content.storyEyebrowAm, locale),
+    storyTitle: localize(content.storyTitle, content.storyTitleAm, locale),
+    storyParagraphs: localizeArray(content.storyParagraphs, content.storyParagraphsAm, locale),
+    features: content.features.map((feature) => ({
+      ...feature,
+      title: localize(feature.title, feature.titleAm, locale),
+      text: localize(feature.text, feature.textAm, locale),
+    })),
+    featuredSections: content.featuredSections.map((section) => ({
+      ...section,
+      title: localize(section.title, section.titleAm, locale),
+      text: localize(section.text, section.textAm, locale),
+    })),
+  }
+}
+
+export function localizedAbout(content: AboutContent, locale: Locale): AboutContent {
+  return {
+    ...content,
+    mission: localize(content.mission, content.missionAm, locale),
+    vision: localize(content.vision, content.visionAm, locale),
+    storyParagraphs: localizeArray(content.storyParagraphs, content.storyParagraphsAm, locale),
+    values: content.values.map((value) => ({
+      ...value,
+      title: localize(value.title, value.titleAm, locale),
+      description: localize(value.description, value.descriptionAm, locale),
+    })),
+  }
+}
+
+export function localizedFooter(content: FooterContent, locale: Locale): FooterContent {
+  return {
+    ...content,
+    description: localize(content.description, content.descriptionAm, locale),
+    copyright: localize(content.copyright, content.copyrightAm, locale),
+    links: content.links.map((link) => ({
+      ...link,
+      label: localize(link.label, link.labelAm, locale),
+    })),
+  }
 }
 
 export async function ensureCategory(title: string) {
@@ -852,19 +981,4 @@ export async function ensureCategory(title: string) {
     },
   ])
   return id
-}
-
-export async function seedRequiredCategories() {
-  await sanityMutate(
-    fallbackCategoryNames.map((title, index) => ({
-      createIfNotExists: {
-        _id: `category.${slugify(title)}`,
-        _type: 'category',
-        title,
-        slug: { _type: 'slug', current: slugify(title) },
-        sortOrder: index + 1,
-        hidden: false,
-      },
-    })),
-  )
 }

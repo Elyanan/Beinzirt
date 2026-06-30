@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { saveProductAction } from '@/app/admin/actions'
+import { AdminToggle } from '@/components/admin-toggle'
+import { PendingSubmitButton } from '@/components/pending-submit-button'
 import { IMAGE_FALLBACK } from '@/lib/images'
 import type { CmsCategory, ProductAdmin } from '@/lib/sanity'
 
@@ -18,11 +20,19 @@ export function AdminProductForm({
 
       <div className="grid gap-5 lg:grid-cols-2">
         <div>
-          <label className="text-sm font-medium">Product Name *</label>
+          <label className="text-sm font-medium">Product Name (English) *</label>
           <input
             name="name"
             required
             defaultValue={product?.name ?? ''}
+            className="mt-2 h-11 w-full rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium">Product Name (Amharic)</label>
+          <input
+            name="nameAm"
+            defaultValue={product?.nameAm ?? ''}
             className="mt-2 h-11 w-full rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
         </div>
@@ -76,15 +86,26 @@ export function AdminProductForm({
         </div>
       </div>
 
-      <div>
-        <label className="text-sm font-medium">Description *</label>
-        <textarea
-          name="description"
-          required
-          rows={5}
-          defaultValue={product?.description ?? ''}
-          className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-        />
+      <div className="grid gap-5 lg:grid-cols-2">
+        <div>
+          <label className="text-sm font-medium">Description (English) *</label>
+          <textarea
+            name="description"
+            required
+            rows={5}
+            defaultValue={product?.description ?? ''}
+            className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium">Description (Amharic)</label>
+          <textarea
+            name="descriptionAm"
+            rows={5}
+            defaultValue={product?.descriptionAm ?? ''}
+            className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+        </div>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
@@ -123,14 +144,18 @@ export function AdminProductForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm">
-          <input name="availability" type="checkbox" defaultChecked={product?.availability !== false} />
-          Available
-        </label>
-        <label className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm">
-          <input name="bestSeller" type="checkbox" defaultChecked={Boolean(product?.bestSeller ?? product?.featured)} />
-          Best Seller
-        </label>
+        <AdminToggle
+          name="availability"
+          label="Available"
+          description="Customers can purchase this product."
+          defaultChecked={product?.availability !== false}
+        />
+        <AdminToggle
+          name="bestSeller"
+          label="Best Seller"
+          description="Show the premium badge in the shop."
+          defaultChecked={Boolean(product?.bestSeller ?? product?.featured)}
+        />
         <div>
           <label className="text-sm font-medium">Sort Order</label>
           <input
@@ -149,12 +174,12 @@ export function AdminProductForm({
         >
           Cancel
         </Link>
-        <button
-          type="submit"
+        <PendingSubmitButton
+          pendingLabel="Saving..."
           className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
         >
           Save Product
-        </button>
+        </PendingSubmitButton>
       </div>
     </form>
   )

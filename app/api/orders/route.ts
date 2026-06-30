@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { ORDERS_EMAIL } from '@/lib/email-config'
+import { orderEmailHtml, sendEmail } from '@/lib/email'
 import { sanityMutate, type OrderLineItem } from '@/lib/sanity'
 import { deliveryFeeForBirr } from '@/lib/pricing'
 
@@ -64,6 +66,7 @@ export async function POST(request: Request) {
     const totalUsd = subtotalUsd
     const generatedOrderId = orderId()
     const documentId = `order.${submissionId}`
+    const timestamp = new Date().toISOString()
 
     await sanityMutate([
       {
@@ -83,11 +86,36 @@ export async function POST(request: Request) {
           totalBirr,
           totalUsd,
           total: totalBirr,
-          timestamp: new Date().toISOString(),
+          timestamp,
           status: 'Pending',
         },
       },
     ])
+
+    const emailResult = await sendEmail({
+      to: ORDERS_EMAIL,
+      subject: `New Beinzirt order ${generatedOrderId}`,
+      replyTo: email,
+      html: orderEmailHtml({
+        orderId: generatedOrderId,
+        customerName,
+        phone,
+        email,
+        address,
+        notes,
+        items: normalizedItems,
+        subtotalBirr,
+        subtotalUsd,
+        deliveryFeeBirr,
+        totalBirr,
+        totalUsd,
+        timestamp,
+      }),
+    })
+
+    if (!emailResult.ok && !emailResult.skipped) {
+      console.error('Order email failed:', emailResult.error)
+    }
 
     return NextResponse.json({ orderId: generatedOrderId })
   } catch (error) {

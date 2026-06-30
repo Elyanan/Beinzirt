@@ -4,6 +4,7 @@ export type Product = {
   id: string
   slug?: string
   name: string
+  nameAm?: string
   category: string
   price?: number
   priceBirr: number
@@ -11,6 +12,7 @@ export type Product = {
   image: string
   images?: string[]
   description: string
+  descriptionAm?: string
   availability?: boolean
   bestSeller?: boolean
   featured?: boolean
@@ -249,7 +251,9 @@ export type GalleryItem = {
   filter: GalleryFilter
   category: string
   title: string
+  titleAm?: string
   caption: string
+  captionAm?: string
   alt?: string
   imageRef?: string
   tall?: boolean

@@ -3,34 +3,46 @@
 import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
 import { ProductCard } from '@/components/product-card'
-import type { Product } from '@/lib/data'
-import type { CmsCategory } from '@/lib/sanity'
+import { useTranslation } from '@/components/language-provider'
+import type { ProductAdmin, CmsCategory } from '@/lib/sanity'
+import { localizedCategory, localizedProduct } from '@/lib/sanity'
 import { cn } from '@/lib/utils'
 
 const sortOptions = [
-  { value: 'best-seller', label: 'Best Sellers' },
-  { value: 'newest', label: 'Newest' },
-  { value: 'az', label: 'A-Z' },
-  { value: 'za', label: 'Z-A' },
+  { value: 'best-seller', key: 'shop.sortBestSeller' },
+  { value: 'newest', key: 'shop.sortNewest' },
+  { value: 'az', key: 'shop.sortAz' },
+  { value: 'za', key: 'shop.sortZa' },
 ] as const
 
 export function ShopClient({
   products,
   categories,
 }: {
-  products: Product[]
+  products: ProductAdmin[]
   categories: CmsCategory[]
 }) {
+  const { t, locale } = useTranslation()
   const [active, setActive] = useState<string>('All')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<string>('best-seller')
 
+  const localizedProducts = useMemo(
+    () => products.map((product) => localizedProduct(product, locale)),
+    [products, locale],
+  )
+
+  const localizedCategories = useMemo(
+    () => categories.map((category) => localizedCategory(category, locale)),
+    [categories, locale],
+  )
+
   const filtered = useMemo(() => {
-    let list = products.filter((p) => {
-      const matchCat = active === 'All' || p.category === active
+    let list = localizedProducts.filter((product) => {
+      const matchCat = active === 'All' || product.category === active
       const matchQuery =
-        p.name.toLowerCase().includes(query.toLowerCase()) ||
-        p.description.toLowerCase().includes(query.toLowerCase())
+        product.name.toLowerCase().includes(query.toLowerCase()) ||
+        product.description.toLowerCase().includes(query.toLowerCase())
       return matchCat && matchQuery
     })
 
@@ -49,7 +61,15 @@ export function ShopClient({
     if (sort === 'az') list = [...list].sort((a, b) => a.name.localeCompare(b.name))
     if (sort === 'za') list = [...list].sort((a, b) => b.name.localeCompare(a.name))
     return list
-  }, [active, products, query, sort])
+  }, [active, localizedProducts, query, sort])
+
+  const categoryFilters = useMemo(
+    () => [
+      { value: 'All', label: t('shop.all') },
+      ...localizedCategories.map((category) => ({ value: category.title, label: category.title })),
+    ],
+    [localizedCategories, t],
+  )
 
   return (
     <section className="px-5 pb-20 lg:px-8">
@@ -60,25 +80,25 @@ export function ShopClient({
             <input
               type="search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search the collection..."
-              aria-label="Search the collection"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t('shop.searchPlaceholder')}
+              aria-label={t('shop.searchPlaceholder')}
               className="h-11 w-full rounded-full border border-border bg-card pl-10 pr-4 text-sm text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
             />
           </div>
           <div className="flex items-center gap-2">
             <label htmlFor="sort" className="text-sm text-muted-foreground">
-              Sort by
+              {t('shop.sortBy')}
             </label>
             <select
               id="sort"
               value={sort}
-              onChange={(e) => setSort(e.target.value)}
+              onChange={(event) => setSort(event.target.value)}
               className="h-11 rounded-full border border-border bg-card px-4 text-sm text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30"
             >
-              {sortOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {t(option.key)}
                 </option>
               ))}
             </select>
@@ -86,35 +106,33 @@ export function ShopClient({
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
-          {['All', ...categories.map((cat) => cat.title)].map((cat) => (
+          {categoryFilters.map((category) => (
             <button
-              key={cat}
+              key={category.value}
               type="button"
-              onClick={() => setActive(cat)}
+              onClick={() => setActive(category.value)}
               className={cn(
                 'rounded-full border px-4 py-1.5 text-sm font-medium transition-all',
-                active === cat
+                active === category.value
                   ? 'border-primary bg-primary text-primary-foreground'
                   : 'border-border bg-card text-foreground/70 hover:border-accent hover:text-foreground',
               )}
             >
-              {cat}
+              {category.label}
             </button>
           ))}
         </div>
 
         {filtered.length > 0 ? (
-          <div className="mt-10 grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
-            {filtered.map((p) => (
-              <ProductCard key={p.id} product={p} />
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+            {filtered.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
           <div className="mx-auto mt-16 max-w-lg rounded-2xl border border-border bg-card px-6 py-10 text-center shadow-luxury">
-            <h2 className="font-serif text-2xl text-foreground">No pieces found</h2>
-            <p className="mt-3 text-muted-foreground">
-              This category is currently empty. Try Dresses or Scarves, or adjust your search.
-            </p>
+            <h2 className="font-serif text-2xl text-foreground">{t('shop.emptyTitle')}</h2>
+            <p className="mt-3 text-muted-foreground">{t('shop.emptyText')}</p>
           </div>
         )}
       </div>

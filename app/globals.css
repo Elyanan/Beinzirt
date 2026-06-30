@@ -221,6 +221,11 @@
   50% { opacity: 0.7; }
 }
 
+@keyframes admin-progress {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(360%); }
+}
+
 .animate-fade-up {
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -232,6 +237,9 @@
 }
 .animate-shimmer-gold {
   animation: shimmer-gold 4s ease-in-out infinite;
+}
+.animate-admin-progress {
+  animation: admin-progress 1.15s ease-in-out infinite;
 }
 
 @layer components {
@@ -249,5 +257,13 @@
 
   .admin-submit {
     @apply rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90;
+  }
+
+  .admin-table-wrap {
+    @apply -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0;
+  }
+
+  .admin-card-grid {
+    @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-3;
   }
 }

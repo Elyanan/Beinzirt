@@ -4,13 +4,24 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Menu, X, ShoppingBag } from 'lucide-react'
+import { LanguageSwitch } from '@/components/language-switch'
+import { useTranslation } from '@/components/language-provider'
 import { cn } from '@/lib/utils'
-import { navLinks } from '@/lib/data'
 import { useCart } from '@/components/cart-context'
 import { SiteLogo } from '@/components/site-logo'
 
+const navItems = [
+  { key: 'nav.home', href: '/' },
+  { key: 'nav.shop', href: '/shop' },
+  { key: 'nav.gallery', href: '/gallery' },
+  { key: 'nav.about', href: '/about' },
+  { key: 'nav.contact', href: '/contact' },
+  { key: 'nav.customOrder', href: '/custom-order' },
+] as const
+
 export function SiteHeader() {
   const pathname = usePathname()
+  const { t } = useTranslation()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const [bump, setBump] = useState(false)
@@ -26,8 +37,8 @@ export function SiteHeader() {
   useEffect(() => {
     if (lastAdded === 0) return
     setBump(true)
-    const t = setTimeout(() => setBump(false), 400)
-    return () => clearTimeout(t)
+    const timer = setTimeout(() => setBump(false), 400)
+    return () => clearTimeout(timer)
   }, [lastAdded])
 
   useEffect(() => {
@@ -44,11 +55,11 @@ export function SiteHeader() {
       )}
     >
       <div className="pattern-strip h-1 w-full opacity-80" />
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-4 lg:gap-4 lg:px-8">
         <SiteLogo />
 
-        <nav className="hidden items-center gap-8 lg:flex">
-          {navLinks.map((link) => {
+        <nav className="hidden items-center gap-6 xl:gap-8 lg:flex">
+          {navItems.map((link) => {
             const active = pathname === link.href
             return (
               <Link
@@ -56,7 +67,7 @@ export function SiteHeader() {
                 href={link.href}
                 className="group relative text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
               >
-                {link.label}
+                {t(link.key)}
                 <span
                   className={cn(
                     'absolute -bottom-1.5 left-0 h-px bg-accent transition-all duration-300 group-hover:w-full',
@@ -69,9 +80,10 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitch className="hidden sm:inline-flex" />
           <Link
             href="/cart"
-            aria-label={`Cart with ${count} items`}
+            aria-label={`${t('nav.cart')} (${count})`}
             className={cn(
               'relative flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted',
               bump && 'animate-fade-up',
@@ -87,7 +99,7 @@ export function SiteHeader() {
           <button
             type="button"
             aria-label="Toggle menu"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => setOpen((value) => !value)}
             className="flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted lg:hidden"
           >
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -95,32 +107,34 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       <div
         className={cn(
           'overflow-hidden border-t border-border bg-background/95 backdrop-blur-md transition-[max-height,opacity] duration-500 lg:hidden',
-          open ? 'max-h-[32rem] opacity-100' : 'max-h-0 opacity-0',
+          open ? 'max-h-[36rem] opacity-100' : 'max-h-0 opacity-0',
         )}
       >
         <nav className="flex flex-col px-5 py-4">
-          {navLinks.map((link, i) => (
+          <div className="mb-3 sm:hidden">
+            <LanguageSwitch />
+          </div>
+          {navItems.map((link, index) => (
             <Link
               key={link.href}
               href={link.href}
-              style={{ transitionDelay: `${i * 40}ms` }}
+              style={{ transitionDelay: `${index * 40}ms` }}
               className={cn(
                 'border-b border-border/60 py-3 font-serif text-lg transition-colors last:border-0',
                 pathname === link.href ? 'text-accent' : 'text-foreground',
               )}
             >
-              {link.label}
+              {t(link.key)}
             </Link>
           ))}
           <Link
             href="/cart"
             className="border-b border-border/60 py-3 font-serif text-lg text-foreground last:border-0"
           >
-            Cart ({count})
+            {t('nav.cart')} ({count})
           </Link>
         </nav>
       </div>

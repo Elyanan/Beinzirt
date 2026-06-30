@@ -5,9 +5,12 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/components/language-provider'
+import { localize } from '@/lib/i18n/localize'
 import type { SiteHero } from '@/lib/sanity'
 
 export function HomeHero({ hero }: { hero: SiteHero }) {
+  const { t, locale } = useTranslation()
   const [offset, setOffset] = useState(0)
 
   useEffect(() => {
@@ -16,9 +19,14 @@ export function HomeHero({ hero }: { hero: SiteHero }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  const eyebrow = localize(hero.eyebrow, hero.eyebrowAm, locale)
+  const heading = localize(hero.heading, hero.headingAm, locale)
+  const subtitle = localize(hero.subtitle, hero.subtitleAm, locale)
+  const buttonText = localize(hero.buttonText, hero.buttonTextAm, locale)
+  const secondaryButtonText = localize(hero.secondaryButtonText, hero.secondaryButtonTextAm, locale)
+
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden pattern-soft pt-28">
-      {/* Floating pattern accents */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="animate-float-slow absolute -left-10 top-32 h-40 w-40 rounded-full pattern-strip opacity-[0.07] blur-[1px]" />
         <div
@@ -33,19 +41,19 @@ export function HomeHero({ hero }: { hero: SiteHero }) {
             className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-accent/40 bg-card/60 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-accent backdrop-blur"
             style={{ animationDelay: '0.05s' }}
           >
-            {hero.eyebrow}
+            {eyebrow}
           </span>
           <h1
             className="animate-fade-up mt-6 text-balance font-serif text-4xl leading-[1.05] text-foreground sm:text-5xl lg:text-6xl"
             style={{ animationDelay: '0.15s' }}
           >
-            {hero.heading}
+            {heading}
           </h1>
           <p
             className="animate-fade-up mt-6 max-w-lg text-pretty text-lg leading-relaxed text-muted-foreground"
             style={{ animationDelay: '0.3s' }}
           >
-            {hero.subtitle}
+            {subtitle}
           </p>
           <div
             className="animate-fade-up mt-8 flex flex-wrap gap-3"
@@ -57,7 +65,7 @@ export function HomeHero({ hero }: { hero: SiteHero }) {
               className="group rounded-full bg-primary px-7 text-primary-foreground hover:bg-primary/90"
             >
               <Link href={hero.buttonLink || '/shop'}>
-                {hero.buttonText}
+                {buttonText}
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
@@ -68,7 +76,7 @@ export function HomeHero({ hero }: { hero: SiteHero }) {
               className="rounded-full border-foreground/20 px-7 hover:bg-foreground/5"
             >
               <Link href={hero.secondaryButtonLink || '/custom-order'}>
-                {hero.secondaryButtonText}
+                {secondaryButtonText}
               </Link>
             </Button>
           </div>
@@ -90,9 +98,9 @@ export function HomeHero({ hero }: { hero: SiteHero }) {
             <div className="pattern-strip absolute inset-x-0 bottom-0 h-2" />
           </div>
           <div className="absolute -bottom-5 left-2 rounded-2xl border border-border bg-card/95 px-5 py-3 shadow-xl backdrop-blur lg:left-0">
-            <p className="font-serif text-2xl text-primary">100% Handmade</p>
+            <p className="font-serif text-2xl text-primary">{t('hero.handmade')}</p>
             <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              Woven by master artisans
+              {t('hero.wovenBy')}
             </p>
           </div>
         </div>

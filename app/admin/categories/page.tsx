@@ -2,57 +2,60 @@ import { Pencil, Plus, Trash2 } from 'lucide-react'
 import {
   deleteCategoryAction,
   saveCategoryAction,
-  seedCategoriesAction,
 } from '@/app/admin/actions'
+import { AdminToggle } from '@/components/admin-toggle'
+import { PendingSubmitButton } from '@/components/pending-submit-button'
 import { getCategories } from '@/lib/sanity'
 
 export default async function AdminCategoriesPage() {
   const categories = await getCategories({ includeHidden: true })
+  const nextSortOrder = Math.max(0, ...categories.map((category) => category.sortOrder ?? 0)) + 1
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-accent">Catalog</p>
-          <h1 className="mt-2 font-serif text-3xl">Categories</h1>
-        </div>
-        <form action={seedCategoriesAction}>
-          <button
-            type="submit"
-            className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
-          >
-            Seed Required Categories
-          </button>
-        </form>
+      <div>
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-accent">Catalog</p>
+        <h1 className="mt-2 font-serif text-3xl">Categories</h1>
       </div>
 
       <section className="rounded-xl border border-border/80 bg-card p-5 shadow-luxury">
         <h2 className="font-serif text-xl">Add Category</h2>
         <form action={saveCategoryAction} className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr_120px_120px]">
+          <input type="hidden" name="nextSortOrder" value={nextSortOrder} />
           <input
             name="title"
             required
-            placeholder="Category title"
+            placeholder="Category title (English)"
+            className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+          <input
+            name="titleAm"
+            placeholder="Category title (Amharic)"
             className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
           <input
             name="description"
-            placeholder="Description"
+            placeholder="Description (English)"
+            className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+          />
+          <input
+            name="descriptionAm"
+            placeholder="Description (Amharic)"
             className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
           <input
             name="sortOrder"
             type="number"
-            defaultValue={999}
+            defaultValue={nextSortOrder}
             className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
-          <button
-            type="submit"
+          <PendingSubmitButton
+            pendingLabel="Adding..."
             className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="size-4" />
             Add
-          </button>
+          </PendingSubmitButton>
         </form>
       </section>
 
@@ -71,17 +74,31 @@ export default async function AdminCategoriesPage() {
               </div>
               <Pencil className="size-4 text-muted-foreground" />
             </summary>
-            <form action={saveCategoryAction} className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr_120px_140px_auto]">
+            <form action={saveCategoryAction} className="mt-5 grid gap-4 lg:grid-cols-2">
               <input type="hidden" name="id" value={category.id} />
               <input
                 name="title"
                 required
                 defaultValue={category.title}
+                placeholder="Title (English)"
+                className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+              />
+              <input
+                name="titleAm"
+                defaultValue={category.titleAm}
+                placeholder="Title (Amharic)"
                 className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
               />
               <input
                 name="description"
                 defaultValue={category.description}
+                placeholder="Description (English)"
+                className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+              />
+              <input
+                name="descriptionAm"
+                defaultValue={category.descriptionAm}
+                placeholder="Description (Amharic)"
                 className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
               />
               <input
@@ -90,16 +107,18 @@ export default async function AdminCategoriesPage() {
                 defaultValue={category.sortOrder}
                 className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
               />
-              <label className="flex h-11 items-center gap-2 rounded-lg border border-border bg-background px-4 text-sm">
-                <input name="hidden" type="checkbox" defaultChecked={category.hidden} />
-                Hidden
-              </label>
-              <button
-                type="submit"
+              <AdminToggle
+                name="hidden"
+                label="Hidden"
+                defaultChecked={category.hidden}
+                className="min-h-11 py-2"
+              />
+              <PendingSubmitButton
+                pendingLabel="Saving..."
                 className="rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
               >
                 Save
-              </button>
+              </PendingSubmitButton>
             </form>
             <form action={deleteCategoryAction} className="mt-3">
               <input type="hidden" name="id" value={category.id} />
