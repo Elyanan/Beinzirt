@@ -25,22 +25,12 @@ export default async function AdminCategoriesPage() {
           <input
             name="title"
             required
-            placeholder="Category title (English)"
-            className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-          />
-          <input
-            name="titleAm"
-            placeholder="Category title (Amharic)"
+            placeholder="Category title"
             className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
           <input
             name="description"
-            placeholder="Description (English)"
-            className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-          />
-          <input
-            name="descriptionAm"
-            placeholder="Description (Amharic)"
+            placeholder="Description"
             className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
           />
           <input
@@ -80,25 +70,13 @@ export default async function AdminCategoriesPage() {
                 name="title"
                 required
                 defaultValue={category.title}
-                placeholder="Title (English)"
-                className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-              />
-              <input
-                name="titleAm"
-                defaultValue={category.titleAm}
-                placeholder="Title (Amharic)"
+                placeholder="Title"
                 className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
               />
               <input
                 name="description"
                 defaultValue={category.description}
-                placeholder="Description (English)"
-                className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-              />
-              <input
-                name="descriptionAm"
-                defaultValue={category.descriptionAm}
-                placeholder="Description (Amharic)"
+                placeholder="Description"
                 className="h-11 rounded-lg border border-border bg-background px-4 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
               />
               <input

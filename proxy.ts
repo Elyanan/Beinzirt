@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { ADMIN_COOKIE, verifyAdminSession } from '@/lib/admin-auth'
+import {
+  ADMIN_COOKIE,
+  adminCookieOptions,
+  createAdminSessionToken,
+  verifyAdminSession,
+} from '@/lib/admin-auth'
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -20,10 +25,16 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/dashboard'
     url.search = ''
-    return NextResponse.redirect(url)
+    const response = NextResponse.redirect(url)
+    response.cookies.set(ADMIN_COOKIE, await createAdminSessionToken(), adminCookieOptions())
+    return response
   }
 
-  return NextResponse.next()
+  const response = NextResponse.next()
+  if (authenticated) {
+    response.cookies.set(ADMIN_COOKIE, await createAdminSessionToken(), adminCookieOptions())
+  }
+  return response
 }
 
 export const config = {

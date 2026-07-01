@@ -22,8 +22,6 @@ const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
 const token = process.env.SANITY_API_TOKEN
 
-export const storefrontCategoryNames = ['Dresses', 'Scarves']
-
 export type CmsCategory = {
   id: string
   title: string
@@ -537,7 +535,7 @@ export async function getGalleryCategories(options?: { includeHidden?: boolean }
 }
 
 export async function getStorefrontProducts() {
-  const query = `*[_type == "product" && coalesce(category->title, categoryName) in ["Dresses", "Scarves"]] | order(sortOrder asc, _createdAt desc) {
+  const query = `*[_type == "product"] | order(sortOrder asc, _createdAt desc) {
     _id, name, nameAm, slug, description, descriptionAm, price, priceBirr, priceUsd, availability, featured, bestSeller, sortOrder, _createdAt, _updatedAt,
     "category": coalesce(category->title, categoryName),
     "image": featuredImage.asset->url,
@@ -545,11 +543,9 @@ export async function getStorefrontProducts() {
     "featuredImageRef": featuredImage.asset._ref,
     "images": images[]{ "url": asset->url, "alt": alt, "assetRef": asset._ref }
   }`
-  const docs = await sanityQuery<any[]>(query)
+  const docs = await sanityQuery<any[]>(query, undefined, { cache: 'no-store' })
   const products = docs?.length ? docs.map(normalizeProduct) : fallbackProducts.map(normalizeProduct)
-  return products
-    .filter((item) => storefrontCategoryNames.includes(item.category))
-    .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999))
+  return products.sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999))
 }
 
 export async function getAdminProducts() {

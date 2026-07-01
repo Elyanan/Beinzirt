@@ -1,6 +1,7 @@
 export const ADMIN_COOKIE = 'beinzirt_admin_session'
 
-const sessionMaxAgeSeconds = 60 * 60 * 8
+/** Stay signed in on this device until logout or long inactivity (~1 year). */
+export const sessionMaxAgeSeconds = 60 * 60 * 24 * 365
 
 function getSecret() {
   return (
